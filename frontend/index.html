@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f2">
+  <title>Индекс команд — MVP</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar"><a class="brand" href="/" aria-label="Индекс команд, главная"><span class="brand-mark">⌘</span><span>индекс<br>команд</span></a><span class="version"><span></span> MVP / 01</span></header>
+    <main>
+      <div class="intro"><div class="eyebrow">ПОИСК ПО СПИСКУ КОМАНД <span> / </span> ЛЕВЕНШТЕЙН</div><h1>Найдём <em>ближайшее</em><sup>*</sup></h1><div class="subtitle"><span aria-hidden="true">*</span> по мнению Левенштейна</div><p>Введите команду — покажем похожие варианты<br class="desktop"> и объясним, насколько они близки.</p></div>
+      <section class="workspace" aria-label="Поиск команд">
+        <label class="search-label" for="query">ВАШ ЗАПРОС <span>01</span></label>
+        <div class="search-wrap"><span class="search-icon" aria-hidden="true">↗</span><input id="query" type="search" maxlength="200" autocomplete="off" placeholder="Например, включи свет"><span class="cursor-hint">↵</span></div>
+        <div class="search-foot"><span>Результаты обновляются по мере ввода</span><span>ТЕКСТ → КАНДИДАТЫ</span></div>
+        <div class="results-header"><div><div class="section-kicker">ВАША БИБЛИОТЕКА</div><h2>Команды <span id="count">00</span></h2></div><button id="toggle-add" class="add-toggle" type="button">＋ <span>Добавить</span></button></div>
+        <form id="add-form" class="add-form" hidden><label class="sr-only" for="new-command">Новая команда</label><input id="new-command" maxlength="200" placeholder="Например, открой окно" required><button type="submit">Добавить</button><button type="button" id="cancel-add" class="cancel">Отмена</button></form>
+        <p id="error" class="error" role="alert" hidden></p>
+        <div class="list-head"><span>КОМАНДА</span><span>БЛИЗОСТЬ <span class="help" title="Близость = 1 − расстояние / длина команды. Зелёная рамка: близость от 80%.">ⓘ</span></span></div>
+        <div id="results" class="results" aria-live="polite"></div>
+        <div class="list-footer"><span><i></i> Зелёная рамка — близость от 80%</span><span>ДИСТАНЦИЯ = ЧИСЛО ПРАВОК</span></div>
+        <div class="actions"><button id="examples" type="button">↺ &nbsp; Загрузить пример</button><button id="clear" type="button">Очистить список</button></div>
+      </section>
+      <div class="note"><span class="note-icon">✳</span><p><strong>Важно знать</strong><br>Поиск сравнивает написание, а не смысл. Похожие слова могут означать противоположные действия — проверяйте результат перед использованием.</p><span class="note-number">INFO / 01</span></div>
+    </main>
+    <footer><span>ИНДЕКС КОМАНД <b>©</b> MVP</span><span>СДЕЛАНО ДЛЯ ИССЛЕДОВАНИЯ ПОИСКА <span>↗</span></span></footer>
+  </div>
+</body>
+</html>

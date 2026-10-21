@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="670" viewBox="0 0 1200 670" role="img" aria-labelledby="title desc">
+<title id="title">Нулевая версия MVP</title>
+<desc id="desc">Веб-интерфейс отправляет запрос алгоритму и отображает результаты. Интерфейс редактирует список команд, который используется алгоритмом поиска по Левенштейну.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#718096"/></marker></defs>
+<rect width="1200" height="670" fill="#f8fafc"/>
+<g font-family="Arial, sans-serif" fill="#17243a">
+  <text x="75" y="68" font-size="32" font-weight="700">Нулевая версия · MVP</text>
+  <text x="75" y="101" font-size="17" fill="#59697e">Поиск по одному списку полных команд</text>
+  <rect x="75" y="160" width="420" height="240" rx="16" fill="#fff" stroke="#d5dee8" stroke-width="2"/>
+  <rect x="705" y="160" width="420" height="240" rx="16" fill="#fff" stroke="#d5dee8" stroke-width="2"/>
+  <rect x="390" y="500" width="420" height="130" rx="16" fill="#fff" stroke="#d5dee8" stroke-width="2"/>
+  <text x="103" y="203" font-size="23" font-weight="700">Веб-интерфейс</text>
+  <g font-size="18" fill="#43536a">
+    <text x="103" y="245">• Ввод запроса и результаты</text>
+    <text x="103" y="281">• Добавление и удаление команд</text>
+    <text x="103" y="317">• Очистка списка</text>
+    <text x="103" y="353">• Готовый список: 15–20 команд</text>
+  </g>
+  <text x="733" y="203" font-size="23" font-weight="700">Поиск</text>
+  <g font-size="18" fill="#43536a">
+    <text x="733" y="245">• Сравнение со всеми командами</text>
+    <text x="733" y="281">• Расстояние Левенштейна</text>
+    <text x="733" y="317">• Ранжированный список</text>
+  </g>
+  <text x="418" y="543" font-size="23" font-weight="700">Список команд</text>
+  <g font-size="18" fill="#43536a"><text x="418" y="580">• Полные команды, например «включи свет»</text><text x="418" y="610">• Сохранение изменений</text></g>
+  <g fill="none" stroke="#718096" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M495 235 H700"/><path d="M705 310 H500"/>
+    <path d="M285 400 V565 H385"/><path d="M815 565 H915 V405"/>
+  </g>
+  <g font-size="15" fill="#59697e">
+    <text x="600" y="222" text-anchor="middle">запрос</text><text x="600" y="335" text-anchor="middle">результаты</text>
+    <text x="300" y="474">редактирование</text><text x="930" y="474">команды для поиска</text>
+  </g>
+</g>
+</svg>
