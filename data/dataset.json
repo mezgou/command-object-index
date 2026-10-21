@@ -1,0 +1,5180 @@
+[
+  {
+    "query": "включи свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет включи",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "включи свец",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включи лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа включи",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вклйчи лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включи люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра включи",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вклчюи люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включи ночник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник включи",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "включи нояник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включи подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка включи",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вкючи подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включить свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет включить",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "включить свте",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включить лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа включить",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "включить ламп",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включить люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра включить",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "включить люсрта",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включить ночник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник включить",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "включить нчник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включить подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка включить",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вклюичть подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "зажги свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет зажги",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "ажги свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "зажги лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа зажги",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зжаги лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "зажги люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра зажги",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги люсрта",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "зажги ночник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник зажги",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги ончник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "зажги подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка зажги",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги подсвтека",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "вруби свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет вруби",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби севт",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "вруби лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа вруби",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "врубз лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "вруби люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра вруби",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби люстта",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "вруби ночник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник вруби",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби ноник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "вруби подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка вруби",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "врби подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "активируй свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет активируй",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "ативируй свет",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "активируй лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа активируй",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "юктивируй лампа",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "активируй люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра активируй",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "акивируй люстра",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "активируй ночник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник активируй",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "активируз ночник",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "активируй подсветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка активируй",
+    "action": "turn_on",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй подпветка",
+    "action": "turn_on",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "включи дверь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь включи",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "включи дварь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включи замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок включи",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "включи змок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включи калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку включи",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "вкюлчи калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включи окно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно включи",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "включи коно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включить дверь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь включить",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "включить двсрь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включить замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок включить",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "включить замко",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включить калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку включить",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "включить клитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включить окно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно включить",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "вклщчить окно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "зажги дверь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь зажги",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "зежги дверь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "зажги замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок зажги",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги заомк",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "зажги калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку зажги",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "зажг калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "зажги окно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно зажги",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги онно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "вруби дверь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь вруби",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби дщерь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "вруби замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок вруби",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "врубш замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "вруби калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку вруби",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "врбуи калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "вруби окно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно вруби",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби кно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "активируй дверь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь активируй",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй дврь",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "активируй замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок активируй",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "астивируй замок",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "активируй калитку",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку активируй",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй калиткп",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "активируй окно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно активируй",
+    "action": "turn_on",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй кно",
+    "action": "turn_on",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "включи пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос включи",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "включи ыплесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "включи робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот включи",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "включи обот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "включи уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик включи",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "квлючи уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "включить пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос включить",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "влючить пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "включить робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот включить",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "включить роиот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "включить уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик включить",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "включить убощрик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "зажги пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос зажги",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги пблесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "зажги робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот зажги",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "щажги робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "зажги уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик зажги",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "загжи уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "вруби пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос вруби",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби плесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "вруби робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот вруби",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби роббт",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "вруби уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик вруби",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "вруиб уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "активируй пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос активируй",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "актвиируй пылесос",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "активируй робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот активируй",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "актиивруй робот",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "активируй уборщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик активируй",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй узорщик",
+    "action": "turn_on",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "включи телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор включи",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "включи телевизок",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включи телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик включи",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "влкючи телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включи тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв включи",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вклчи тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включи экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран включи",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "включц экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включить телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор включить",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "включить телеизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включить телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик включить",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "включть телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включить тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв включить",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "включить тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "включить экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран включить",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вклчюить экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "зажги телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор зажги",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "зжаги телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "зажги телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик зажги",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги иелик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "зажги тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв зажги",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "зажги экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран зажги",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "зажги экарн",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "вруби телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор вруби",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби телевизоя",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "вруби телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик вруби",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вуби телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "вруби тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв вруби",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вруби тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "вруби экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран вруби",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вруб экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "активируй телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор активируй",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "активирйу телевизор",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "активируй телик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик активируй",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй тлеик",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "активируй тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв активируй",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "активируй тв",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "активируй экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран активируй",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "активирйу экран",
+    "action": "turn_on",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключи свет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет выключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выклщчи свет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключи лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа выключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выкеючи лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключи люстра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра выключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключи ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник выключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключи ночнки",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключи подсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка выключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключи подсвета",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключить свет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет выключить",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить свек",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключить лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа выключить",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить ламп",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключить люстра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра выключить",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить люсра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключить ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник выключить",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключкть ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключить подсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка выключить",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить подсветак",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "погаси свет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет погаси",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси све",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "погаси лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа погаси",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси лапа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "погаси люстра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра погаси",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси люсра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "погаси ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник погаси",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси ночнвк",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "погаси подсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка погаси",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси одсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выруби свет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет выруби",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби всет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выруби лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа выруби",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "ывруби лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выруби люстра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра выруби",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби люстар",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выруби ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник выруби",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "врыуби ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выруби подсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка выруби",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби одсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отключи свет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет отключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи всет",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отключи лампа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа отключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи лумпа",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отключи люстра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра отключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отклюки люстра",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отключи ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник отключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отлючи ночник",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отключи подсветка",
+    "action": "turn_off",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка отключи",
+    "action": "turn_off",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи подсветк",
+    "action": "turn_off",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "выключи дверь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь выключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выключи двеь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключи замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок выключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "вылкючи замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключи калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку выключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выключи калитук",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключи окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно выключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выклячи окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключить дверь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь выключить",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить двйрь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключить замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок выключить",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить амок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключить калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку выключить",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выклучить калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключить окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно выключить",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выклюить окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "погаси дверь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь погаси",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси деврь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "погаси замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок погаси",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси замож",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "погаси калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку погаси",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "пгаси калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "погаси окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно погаси",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "погасю окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выруби дверь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь выруби",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби дшерь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выруби замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок выруби",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби заомк",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выруби калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку выруби",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "вырубр калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выруби окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно выруби",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "выруии окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отключи дверь",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь отключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи дверц",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отключи замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок отключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отключл замок",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отключи калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку отключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отклюич калитку",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отключи окно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно отключи",
+    "action": "turn_off",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи коно",
+    "action": "turn_off",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "выключи пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос выключи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "ыключи пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выключи робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот выключи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "влключи робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выключи уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик выключи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "вбключи уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выключить пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос выключить",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить гылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выключить робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот выключить",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить нобот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выключить уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик выключить",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить уборщи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "погаси пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос погаси",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси плыесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "погаси робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот погаси",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "погси робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "погаси уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик погаси",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси уорщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выруби пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос выруби",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "вырущи пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выруби робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот выруби",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "ыруби робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выруби уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик выруби",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби убощрик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "отключи пылесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос отключи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи пмлесос",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "отключи робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот отключи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "отключ робот",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "отключи уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик отключи",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "отклчюи уборщик",
+    "action": "turn_off",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "выключи телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор выключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выкгючи телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключи телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик выключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выклачи телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключи тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв выключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вылючи тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключи экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран выключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "вылкючи экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключить телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор выключить",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить теюевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключить телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик выключить",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить етлик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключить тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв выключить",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выключить тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выключить экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран выключить",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выклюичть экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "погаси телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор погаси",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "погаси телеивзор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "погаси телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик погаси",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "поагси телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "погаси тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв погаси",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "пгаси тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "погаси экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран погаси",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "погаис экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выруби телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор выруби",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби телеризор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выруби телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик выруби",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выцуби телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выруби тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв выруби",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "выруби экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран выруби",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "выруби эран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отключи телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор отключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отлкючи телевизор",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отключи телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик отключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отключф телик",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отключи тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв отключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи тв",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отключи экран",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран отключи",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отключи экрпн",
+    "action": "turn_off",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открой свет",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет открой",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открой севт",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открой лампа",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа открой",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открой лама",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открой люстра",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра открой",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открой люстца",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открой ночник",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник открой",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открой нщчник",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открой подсветка",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка открой",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открой подсветкф",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открыть свет",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет открыть",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открыты свет",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открыть лампа",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа открыть",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть алмпа",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открыть люстра",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра открыть",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открыьт люстра",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открыть ночник",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник открыть",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открыьт ночник",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открыть подсветка",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка открыть",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть подсветак",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "распахни свет",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет распахни",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни севт",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "распахни лампа",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа распахни",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "распхани лампа",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "распахни люстра",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра распахни",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "распахнц люстра",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "распахни ночник",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник распахни",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни очник",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "распахни подсветка",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка распахни",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "распдхни подсветка",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отопри свет",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет отопри",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри свте",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отопри лампа",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа отопри",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри ламфа",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отопри люстра",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра отопри",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отопйи люстра",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отопри ночник",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник отопри",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри точник",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "отопри подсветка",
+    "action": "open",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка отопри",
+    "action": "open",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "отокри подсветка",
+    "action": "open",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "открой дверь",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь открой",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "открой дерь",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открой замок",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок открой",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "открох замок",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открой калитку",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку открой",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "открй калитку",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открой окно",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно открой",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отксой окно",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открыть дверь",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь открыть",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть сверь",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открыть замок",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок открыть",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть замо",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открыть калитку",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку открыть",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отркыть калитку",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открыть окно",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно открыть",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "откырть окно",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "распахни дверь",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь распахни",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни двгрь",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "распахни замок",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок распахни",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "аспахни замок",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "распахни калитку",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку распахни",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни калияку",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "распахни окно",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно распахни",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "распани окно",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отопри дверь",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь отопри",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри аверь",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отопри замок",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок отопри",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри шамок",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отопри калитку",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку отопри",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "оотпри калитку",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "отопри окно",
+    "action": "open",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно отопри",
+    "action": "open",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "отопр окно",
+    "action": "open",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "открой пылесос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос открой",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "открой жылесос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "открой робот",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот открой",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "окрой робот",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "открой уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик открой",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "пткрой уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "открыть пылесос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос открыть",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть пылсеос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "открыть робот",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот открыть",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть обот",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "открыть уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик открыть",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть уборищк",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "распахни пылесос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос распахни",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни пылеос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "распахни робот",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот распахни",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни робоа",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "распахни уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик распахни",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "рсапахни уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "отопри пылесос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос отопри",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри пылеос",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "отопри робот",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот отопри",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри робо",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "отопри уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик отопри",
+    "action": "open",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "отпри уборщик",
+    "action": "open",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "открой телевизор",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор открой",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "открой телевиор",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открой телик",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик открой",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "откой телик",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открой тв",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв открой",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "открой тв",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открой экран",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран открой",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "открой экрна",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открыть телевизор",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор открыть",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "откюыть телевизор",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открыть телик",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик открыть",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "открыьт телик",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открыть тв",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв открыть",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть тв",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "открыть экран",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран открыть",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "открыть эаран",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "распахни телевизор",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор распахни",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "распахни телвеизор",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "распахни телик",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик распахни",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "распчхни телик",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "распахни тв",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв распахни",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "распахн тв",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "распахни экран",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран распахни",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "распхани экран",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отопри телевизор",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор отопри",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отпори телевизор",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отопри телик",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик отопри",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "тоопри телик",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отопри тв",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв отопри",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри тв",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "отопри экран",
+    "action": "open",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран отопри",
+    "action": "open",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "отопри эран",
+    "action": "open",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрой свет",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет закрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой севт",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрой лампа",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа закрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой лахпа",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрой люстра",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра закрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закро люстра",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрой ночник",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник закрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой ночинк",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрой подсветка",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка закрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой подсветза",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть свет",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет закрыть",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыь свет",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть лампа",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа закрыть",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зкрыть лампа",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть люстра",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра закрыть",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "акрыть люстра",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть ночник",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник закрыть",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть нпчник",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть подсветка",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка закрыть",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть подсиетка",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой свет",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет прикрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "прикроа свет",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой лампа",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа прикрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой лмпа",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой люстра",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра прикрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой люстар",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой ночник",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник прикрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "ярикрой ночник",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой подсветка",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка прикрой",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой посветка",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "запри свет",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "свет запри",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "запр свет",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "запри лампа",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "лампа запри",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зарпи лампа",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "запри люстра",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "люстра запри",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "запри люстар",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "запри ночник",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "ночник запри",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зяпри ночник",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "запри подсветка",
+    "action": "close",
+    "target": "light",
+    "label": "exact"
+  },
+  {
+    "query": "подсветка запри",
+    "action": "close",
+    "target": "light",
+    "label": "inverted"
+  },
+  {
+    "query": "зпари подсветка",
+    "action": "close",
+    "target": "light",
+    "label": "typo"
+  },
+  {
+    "query": "закрой дверь",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь закрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой деврь",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрой замок",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок закрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "зкрой замок",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрой калитку",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку закрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "заркой калитку",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрой окно",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно закрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "зкрой окно",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть дверь",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь закрыть",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть двеь",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть замок",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок закрыть",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть зсмок",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть калитку",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку закрыть",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть алитку",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть окно",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно закрыть",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть коно",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой дверь",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь прикрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой верь",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой замок",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок прикрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой зпмок",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой калитку",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку прикрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "пркирой калитку",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой окно",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно прикрой",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой онко",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "запри дверь",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "дверь запри",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "запир дверь",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "запри замок",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "замок запри",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "щапри замок",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "запри калитку",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "калитку запри",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "апри калитку",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "запри окно",
+    "action": "close",
+    "target": "door",
+    "label": "exact"
+  },
+  {
+    "query": "окно запри",
+    "action": "close",
+    "target": "door",
+    "label": "inverted"
+  },
+  {
+    "query": "запри онко",
+    "action": "close",
+    "target": "door",
+    "label": "typo"
+  },
+  {
+    "query": "закрой пылесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос закрой",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой пыелсос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "закрой робот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот закрой",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "закрй робот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "закрой уборщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик закрой",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой уобрщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть пылесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос закрыть",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть плыесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть робот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот закрыть",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть рыбот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть уборщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик закрыть",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "иакрыть уборщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой пылесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос прикрой",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрцй пылесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой робот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот прикрой",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "приброй робот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой уборщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик прикрой",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой уборбик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "запри пылесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "пылесос запри",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "запи пылесос",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "запри робот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "робот запри",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "запри розот",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "запри уборщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "exact"
+  },
+  {
+    "query": "уборщик запри",
+    "action": "close",
+    "target": "vacuum",
+    "label": "inverted"
+  },
+  {
+    "query": "зари уборщик",
+    "action": "close",
+    "target": "vacuum",
+    "label": "typo"
+  },
+  {
+    "query": "закрой телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор закрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрфй телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрой телик",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик закрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой нелик",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрой тв",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв закрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой тв",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрой экран",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран закрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрой эран",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор закрыть",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыьт телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть телик",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик закрыть",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закроть телик",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть тв",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв закрыть",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыть тв",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "закрыть экран",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран закрыть",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "закрыкь экран",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор прикрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "пикрой телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой телик",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик прикрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой теюик",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой тв",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв прикрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "рпикрой тв",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "прикрой экран",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран прикрой",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "прикрой кран",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "запри телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телевизор запри",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "азпри телевизор",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "запри телик",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "телик запри",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "запри тлик",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "запри тв",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "тв запри",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "зарпи тв",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  },
+  {
+    "query": "запри экран",
+    "action": "close",
+    "target": "tv",
+    "label": "exact"
+  },
+  {
+    "query": "экран запри",
+    "action": "close",
+    "target": "tv",
+    "label": "inverted"
+  },
+  {
+    "query": "запри эксан",
+    "action": "close",
+    "target": "tv",
+    "label": "typo"
+  }
+]
