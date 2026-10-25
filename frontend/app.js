@@ -3,65 +3,37 @@ const results = document.querySelector('#results');
 const count = document.querySelector('#count');
 const error = document.querySelector('#error');
 const addForm = document.querySelector('#add-form');
-const newCommand = document.querySelector('#new-command');
 let sequence = 0;
 
 function showError(message) { error.textContent = message; error.hidden = !message; }
-async function request(url, options) {
-  const response = await fetch(url, options);
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || 'Не удалось выполнить запрос');
-  return data;
+async function request(url, options) { const response = await fetch(url, options); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Не удалось выполнить запрос'); return data; }
+function words(value, allowEmpty = false) { const items = value.split(',').map(word => word.trim()); if (!value.trim()) return []; return items.filter(word => word || allowEmpty).map(word => word === '∅' ? '' : word); }
+function field(label, name, value, placeholder) { const wrapper = document.createElement('label'); wrapper.className = 'edit-field'; wrapper.textContent = label; const input = document.createElement('input'); input.name = name; input.maxLength = name === 'text' ? 200 : 800; input.required = name === 'text'; input.value = value || ''; input.placeholder = placeholder; wrapper.append(input); return wrapper; }
+function formValues(form) { return {text: form.querySelector('[name=text]').value, actions: words(form.querySelector('[name=actions]').value, true), objects: words(form.querySelector('[name=objects]').value)}; }
+function chips(kind, items) { if (!items?.length) return null; const group = document.createElement('div'); group.className = 'chip-group'; const title = document.createElement('span'); title.className = 'chip-label'; title.textContent = kind; group.append(title); items.forEach(item => { const chip = document.createElement('span'); chip.className = `chip ${kind === 'ДЕЙСТВИЯ' ? 'action-chip' : 'object-chip'}${item ? '' : ' empty-action'}`; chip.textContent = item || '∅'; chip.title = item ? '' : 'Форма без действия'; group.append(chip); }); return group; }
+function createEditor(command, onDone) {
+  const form = document.createElement('form'); form.className = 'inline-editor'; const grid = document.createElement('div'); grid.className = 'form-grid';
+  grid.append(field('ТЕКСТ КОМАНДЫ', 'text', command.text, 'Например, включи свет на кухне'), field('ВАРИАНТЫ ДЕЙСТВИЯ · через запятую', 'actions', command.actions?.map(action => action || '∅').join(', '), 'включить, включи, ∅'), field('ВАРИАНТЫ ОБЪЕКТА · через запятую', 'objects', command.objects?.join(', '), 'свет на кухне, кухонный свет'));
+  const buttons = document.createElement('div'); buttons.className = 'form-buttons'; const save = document.createElement('button'); save.type = 'submit'; save.textContent = 'Сохранить'; const cancel = document.createElement('button'); cancel.type = 'button'; cancel.className = 'cancel'; cancel.textContent = 'Отмена'; cancel.addEventListener('click', onDone); buttons.append(save, cancel); form.append(grid, buttons);
+  form.addEventListener('submit', async event => { event.preventDefault(); try { await request(`/api/commands/${command.id}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(formValues(form))}); onDone(); await refresh(); } catch (e) { showError(e.message); } }); return form;
 }
 function render(commands, searching) {
-  count.textContent = String(commands.length).padStart(2, '0');
-  results.replaceChildren();
-  if (!commands.length) {
-    const empty = document.createElement('div'); empty.className = 'empty';
-    empty.textContent = 'Список пока пуст. Добавьте команду или загрузите пример.';
-    results.append(empty); return;
-  }
+  count.textContent = String(commands.length).padStart(2, '0'); results.replaceChildren();
+  if (!commands.length) { const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = 'Список пока пуст. Добавьте команду или загрузите пример.'; results.append(empty); return; }
   commands.forEach((command, index) => {
-    const row = document.createElement('div'); row.className = 'row';
-    if (searching && command.similarity >= 80) row.classList.add('match');
-    const label = document.createElement('div'); label.className = 'command';
-    const number = document.createElement('span'); number.className = 'index'; number.textContent = String(index + 1).padStart(2, '0');
-    const text = document.createElement('span'); text.className = 'command-text'; text.textContent = command.text;
-    label.append(number, text);
-    const metric = document.createElement('div'); metric.className = 'metric';
-    const bar = document.createElement('div'); bar.className = 'bar';
-    const fill = document.createElement('span'); fill.style.width = searching ? `${command.similarity}%` : '0%'; bar.append(fill);
-    const details = document.createElement('span'); details.className = 'metric-details';
-    const score = document.createElement('span'); score.className = 'score';
-    score.textContent = searching ? `${Number(command.similarity.toFixed(1))}%` : '—';
-    const distance = document.createElement('span'); distance.className = 'distance';
-    distance.textContent = searching ? `${command.distance} прав.` : '';
-    metric.title = searching ? `Расстояние: ${command.distance}; близость: ${Number(command.similarity.toFixed(1))}%` : 'Введите запрос для сравнения';
-    details.append(score, distance); metric.append(bar, details);
-    const remove = document.createElement('button'); remove.className = 'delete'; remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', `Удалить команду «${command.text}»`);
-    remove.addEventListener('click', async () => { try { await request(`/api/commands/${command.id}`, {method:'DELETE'}); await refresh(); } catch (e) { showError(e.message); } });
-    row.append(label, metric, remove); results.append(row);
+    const row = document.createElement('article'); row.className = 'row'; if (searching && command.similarity >= 80) row.classList.add('match');
+    const content = document.createElement('div'); content.className = 'command'; const headline = document.createElement('div'); headline.className = 'command-head'; const number = document.createElement('span'); number.className = 'index'; number.textContent = String(index + 1).padStart(2, '0'); const text = document.createElement('span'); text.className = 'command-text'; text.textContent = command.text; headline.append(number, text); content.append(headline);
+    const meta = document.createElement('div'); meta.className = 'command-meta'; const actionChips = chips('ДЕЙСТВИЯ', command.actions); const objectChips = chips('ОБЪЕКТЫ', command.objects); if (actionChips) meta.append(actionChips); if (objectChips) meta.append(objectChips); if (searching && command.matched_text && command.matched_text !== command.text) { const matched = document.createElement('span'); matched.className = 'matched-form'; matched.textContent = `совпало: ${command.matched_text}`; meta.append(matched); } if (!meta.children.length) { const special = document.createElement('span'); special.className = 'special'; special.textContent = 'СПЕЦИАЛЬНАЯ КОМАНДА'; meta.append(special); } content.append(meta);
+    const metric = document.createElement('div'); metric.className = 'metric'; const bar = document.createElement('div'); bar.className = 'bar'; const fill = document.createElement('span'); fill.style.width = searching ? `${command.similarity}%` : '0%'; bar.append(fill); const details = document.createElement('span'); details.className = 'metric-details'; const score = document.createElement('span'); score.className = 'score'; score.textContent = searching ? `${Number(command.similarity.toFixed(1))}%` : '—'; const distance = document.createElement('span'); distance.className = 'distance'; distance.textContent = searching ? `${command.distance} прав.` : ''; details.append(score, distance); metric.append(bar, details);
+    const controls = document.createElement('div'); controls.className = 'row-controls'; const edit = document.createElement('button'); edit.className = 'edit'; edit.type = 'button'; edit.textContent = 'Изменить'; edit.setAttribute('aria-label', `Изменить «${command.text}»`); const remove = document.createElement('button'); remove.className = 'delete'; remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', `Удалить «${command.text}»`);
+    let editor; edit.addEventListener('click', () => { if (editor) { editor.remove(); editor = null; edit.textContent = 'Изменить'; } else { editor = createEditor(command, () => { editor.remove(); editor = null; edit.textContent = 'Изменить'; }); row.append(editor); edit.textContent = 'Свернуть'; editor.querySelector('[name=text]').focus(); } }); remove.addEventListener('click', async () => { if (!confirm(`Удалить команду «${command.text}»?`)) return; try { await request(`/api/commands/${command.id}`, {method:'DELETE'}); await refresh(); } catch (e) { showError(e.message); } }); controls.append(edit, remove); row.append(content, metric, controls); results.append(row);
   });
 }
-async function refresh() {
-  const current = ++sequence; const value = query.value;
-  try { const data = await request(`/api/commands?q=${encodeURIComponent(value)}`); if (current === sequence) { showError(''); render(data.commands, Boolean(value.trim())); } }
-  catch (e) { if (current === sequence) showError('Не удалось загрузить команды. Проверьте подключение к серверу.'); }
-}
+async function refresh() { const current = ++sequence; try { const data = await request(`/api/commands?q=${encodeURIComponent(query.value)}`); if (current === sequence) { showError(''); render(data.commands, Boolean(query.value.trim())); } } catch (e) { if (current === sequence) showError('Не удалось загрузить команды. Проверьте подключение к серверу.'); } }
 query.addEventListener('input', refresh);
-document.querySelector('#toggle-add').addEventListener('click', () => { addForm.hidden = !addForm.hidden; if (!addForm.hidden) newCommand.focus(); });
+document.querySelector('#toggle-add').addEventListener('click', () => { addForm.hidden = !addForm.hidden; if (!addForm.hidden) document.querySelector('#new-command').focus(); });
 document.querySelector('#cancel-add').addEventListener('click', () => { addForm.hidden = true; showError(''); });
-addForm.addEventListener('submit', async event => {
-  event.preventDefault();
-  try { await request('/api/commands', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:newCommand.value})}); newCommand.value = ''; addForm.hidden = true; await refresh(); }
-  catch (e) { showError(e.message); }
-});
-document.querySelector('#examples').addEventListener('click', async () => {
-  if (Number(count.textContent) && !confirm('Заменить текущий список готовым набором команд?')) return;
-  try { await request('/api/commands/examples', {method:'POST'}); await refresh(); } catch (e) { showError(e.message); }
-});
-document.querySelector('#clear').addEventListener('click', async () => {
-  if (!Number(count.textContent) || !confirm('Удалить все команды из списка?')) return;
-  try { await request('/api/commands', {method:'DELETE'}); await refresh(); } catch (e) { showError(e.message); }
-});
+addForm.addEventListener('submit', async event => { event.preventDefault(); try { await request('/api/commands', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text: document.querySelector('#new-command').value, actions: words(document.querySelector('#new-actions').value, true), objects: words(document.querySelector('#new-objects').value)})}); addForm.reset(); addForm.hidden = true; await refresh(); } catch (e) { showError(e.message); } });
+document.querySelector('#examples').addEventListener('click', async () => { if (Number(count.textContent) && !confirm('Заменить текущий список готовым набором смысловых блоков?')) return; try { await request('/api/commands/examples', {method:'POST'}); await refresh(); } catch (e) { showError(e.message); } });
+document.querySelector('#clear').addEventListener('click', async () => { if (!Number(count.textContent) || !confirm('Удалить все смысловые блоки?')) return; try { await request('/api/commands', {method:'DELETE'}); await refresh(); } catch (e) { showError(e.message); } });
 refresh();

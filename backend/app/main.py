@@ -1,29 +1,71 @@
+import copy
 import json
 import os
-import sqlite3
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from search import rank
+from catalog import DEFAULT_COMMANDS
+from search import normalize, rank
 
-DB_PATH = os.environ.get('DB_PATH', '/data/commands.db')
-EXAMPLES = ['включи свет', 'выключи свет', 'приглуши свет', 'открой окно',
-            'закрой окно', 'открой дверь', 'закрой дверь', 'включи музыку',
-            'выключи музыку', 'сделай громче', 'сделай тише', 'поставь на паузу',
-            'покажи погоду', 'установи таймер', 'который час', 'найди телефон',
-            'включи пылесос', 'останови пылесос']
+DATA_PATH = os.environ.get('DATA_PATH', '/data/commands.json')
+LOCK = threading.Lock()
 
 
-def connect():
-    db = sqlite3.connect(DB_PATH, timeout=10)
-    db.row_factory = sqlite3.Row
-    return db
+def clean_words(value, allow_empty=False):
+    if value is None:
+        return []
+    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+        raise ValueError()
+    words = []
+    for item in value:
+        item = ' '.join(item.split())
+        if not item and allow_empty:
+            if '' not in words:
+                words.append('')
+            continue
+        if not item or len(item) > 200:
+            raise ValueError()
+        if normalize(item) not in {normalize(word) for word in words}:
+            words.append(item)
+    return words
 
 
-def initialize():
-    os.makedirs(os.path.dirname(os.path.abspath(DB_PATH)), exist_ok=True)
-    with connect() as db:
-        db.execute('CREATE TABLE IF NOT EXISTS commands (id INTEGER PRIMARY KEY, text TEXT NOT NULL)')
+def clean_command(value):
+    if not isinstance(value, dict) or not isinstance(value.get('text'), str):
+        raise ValueError()
+    text = ' '.join(value['text'].split())
+    if not text or len(text) > 200:
+        raise ValueError()
+    command = {'text': text}
+    for field in ('actions', 'objects'):
+        words = clean_words(value.get(field), allow_empty=field == 'actions')
+        if words:
+            command[field] = words
+    return command
+
+
+def load_commands():
+    if not os.path.exists(DATA_PATH):
+        return copy.deepcopy(DEFAULT_COMMANDS)
+    with open(DATA_PATH, encoding='utf-8') as file:
+        data = json.load(file)
+    if not isinstance(data, list):
+        raise ValueError('Файл команд должен содержать список')
+    return [clean_command(command) for command in data]
+
+
+def save_commands(commands):
+    os.makedirs(os.path.dirname(os.path.abspath(DATA_PATH)), exist_ok=True)
+    temporary = f'{DATA_PATH}.tmp'
+    with open(temporary, 'w', encoding='utf-8') as file:
+        json.dump(commands, file, ensure_ascii=False, indent=2)
+        file.write('\n')
+    os.replace(temporary, DATA_PATH)
+
+
+def with_ids(commands):
+    return [{**command, 'id': index + 1} for index, command in enumerate(commands)]
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -35,6 +77,16 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def read_payload(self):
+        size = int(self.headers.get('Content-Length', '0'))
+        if not 1 <= size <= 16384:
+            raise ValueError()
+        return json.loads(self.rfile.read(size))
+
+    def commands(self):
+        with LOCK:
+            return load_commands()
+
     def do_GET(self):
         url = urlparse(self.path)
         if url.path != '/api/commands':
@@ -42,52 +94,67 @@ class Handler(BaseHTTPRequestHandler):
         query = parse_qs(url.query, keep_blank_values=True).get('q', [''])[0]
         if len(query) > 200:
             return self.respond(400, {'error': 'Запрос слишком длинный (максимум 200 символов)'})
-        with connect() as db:
-            commands = [dict(row) for row in db.execute('SELECT id, text FROM commands')]
+        commands = with_ids(self.commands())
         self.respond(200, {'commands': rank(query, commands) if query.strip() else commands})
 
     def do_POST(self):
         path = urlparse(self.path).path
         if path == '/api/commands/examples':
-            with connect() as db:
-                db.execute('DELETE FROM commands')
-                db.executemany('INSERT INTO commands (text) VALUES (?)', [(x,) for x in EXAMPLES])
+            with LOCK:
+                save_commands(copy.deepcopy(DEFAULT_COMMANDS))
             return self.respond(200, {'ok': True})
         if path != '/api/commands':
             return self.respond(404, {'error': 'Не найдено'})
         try:
-            size = int(self.headers.get('Content-Length', '0'))
-            if size > 4096 or size < 1:
-                raise ValueError()
-            payload = json.loads(self.rfile.read(size))
-            text = payload.get('text')
-            if not isinstance(text, str):
-                raise ValueError()
-            text = ' '.join(text.split())
-            if not text or len(text) > 200:
-                raise ValueError()
+            command = clean_command(self.read_payload())
         except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError, AttributeError):
-            return self.respond(400, {'error': 'Введите команду длиной до 200 символов'})
-        with connect() as db:
-            if any(' '.join(row['text'].lower().split()) == text.lower() for row in db.execute('SELECT text FROM commands')):
+            return self.respond(400, {'error': 'Заполните текст команды и корректные варианты длиной до 200 символов'})
+        with LOCK:
+            commands = load_commands()
+            if any(normalize(item['text']) == normalize(command['text']) for item in commands):
                 return self.respond(409, {'error': 'Такая команда уже есть в списке'})
-            cursor = db.execute('INSERT INTO commands (text) VALUES (?)', (text,))
-            self.respond(201, {'id': cursor.lastrowid, 'text': text})
+            commands.append(command)
+            save_commands(commands)
+        self.respond(201, {**command, 'id': len(commands)})
+
+    def do_PUT(self):
+        prefix = '/api/commands/'
+        path = urlparse(self.path).path
+        if not path.startswith(prefix) or not path[len(prefix):].isdigit():
+            return self.respond(404, {'error': 'Не найдено'})
+        try:
+            command = clean_command(self.read_payload())
+        except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError, AttributeError):
+            return self.respond(400, {'error': 'Заполните текст команды и корректные варианты длиной до 200 символов'})
+        index = int(path[len(prefix):]) - 1
+        with LOCK:
+            commands = load_commands()
+            if not 0 <= index < len(commands):
+                return self.respond(404, {'error': 'Команда не найдена'})
+            if any(i != index and normalize(item['text']) == normalize(command['text']) for i, item in enumerate(commands)):
+                return self.respond(409, {'error': 'Такая команда уже есть в списке'})
+            commands[index] = command
+            save_commands(commands)
+        self.respond(200, {**command, 'id': index + 1})
 
     def do_DELETE(self):
         path = urlparse(self.path).path
         if path == '/api/commands':
-            with connect() as db:
-                db.execute('DELETE FROM commands')
+            with LOCK:
+                save_commands([])
             return self.respond(200, {'ok': True})
         prefix = '/api/commands/'
-        if path.startswith(prefix) and path[len(prefix):].isdigit():
-            with connect() as db:
-                cursor = db.execute('DELETE FROM commands WHERE id = ?', (int(path[len(prefix):]),))
-            return self.respond(200 if cursor.rowcount else 404, {'ok': bool(cursor.rowcount)})
-        self.respond(404, {'error': 'Не найдено'})
+        if not path.startswith(prefix) or not path[len(prefix):].isdigit():
+            return self.respond(404, {'error': 'Не найдено'})
+        index = int(path[len(prefix):]) - 1
+        with LOCK:
+            commands = load_commands()
+            if not 0 <= index < len(commands):
+                return self.respond(404, {'error': 'Команда не найдена'})
+            commands.pop(index)
+            save_commands(commands)
+        self.respond(200, {'ok': True})
 
 
 if __name__ == '__main__':
-    initialize()
     ThreadingHTTPServer(('0.0.0.0', int(os.environ.get('PORT', '8000'))), Handler).serve_forever()

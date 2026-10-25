@@ -18,14 +18,14 @@
         <div class="search-wrap"><span class="search-icon" aria-hidden="true">↗</span><input id="query" type="search" maxlength="200" autocomplete="off" placeholder="Например, включи свет"><span class="cursor-hint">↵</span></div>
         <div class="search-foot"><span>Результаты обновляются по мере ввода</span><span>ТЕКСТ → КАНДИДАТЫ</span></div>
         <div class="results-header"><div><div class="section-kicker">ВАША БИБЛИОТЕКА</div><h2>Команды <span id="count">00</span></h2></div><button id="toggle-add" class="add-toggle" type="button">＋ <span>Добавить</span></button></div>
-        <form id="add-form" class="add-form" hidden><label class="sr-only" for="new-command">Новая команда</label><input id="new-command" maxlength="200" placeholder="Например, открой окно" required><button type="submit">Добавить</button><button type="button" id="cancel-add" class="cancel">Отмена</button></form>
+        <form id="add-form" class="command-form" hidden><div class="form-grid"><label>ТЕКСТ КОМАНДЫ<input id="new-command" maxlength="200" placeholder="Например, включи свет на кухне" required></label><label>ВАРИАНТЫ ДЕЙСТВИЯ <small>через запятую; ∅ = без действия</small><input id="new-actions" maxlength="800" placeholder="включить, включи, ∅"></label><label>ВАРИАНТЫ ОБЪЕКТА <small>через запятую</small><input id="new-objects" maxlength="800" placeholder="свет на кухне, кухонный свет"></label></div><p class="form-hint">Оставьте оба списка пустыми для специальной команды: например, «дальше».</p><div class="form-buttons"><button type="submit">Сохранить команду</button><button type="button" id="cancel-add" class="cancel">Отмена</button></div></form>
         <p id="error" class="error" role="alert" hidden></p>
-        <div class="list-head"><span>КОМАНДА</span><span>БЛИЗОСТЬ <span class="help" title="Близость = 1 − расстояние / длина команды. Зелёная рамка: близость от 80%.">ⓘ</span></span></div>
+        <div class="list-head"><span>СМЫСЛОВОЙ БЛОК</span><span>БЛИЗОСТЬ <span class="help" title="Близость = 1 − расстояние / длина команды. Зелёная рамка: близость от 80%.">ⓘ</span></span></div>
         <div id="results" class="results" aria-live="polite"></div>
         <div class="list-footer"><span><i></i> Зелёная рамка — близость от 80%</span><span>ДИСТАНЦИЯ = ЧИСЛО ПРАВОК</span></div>
         <div class="actions"><button id="examples" type="button">↺ &nbsp; Загрузить пример</button><button id="clear" type="button">Очистить список</button></div>
       </section>
-      <div class="note"><span class="note-icon">✳</span><p><strong>Важно знать</strong><br>Поиск сравнивает написание, а не смысл. Похожие слова могут означать противоположные действия — проверяйте результат перед использованием.</p><span class="note-number">INFO / 01</span></div>
+      <div class="note"><span class="note-icon">✳</span><p><strong>Важно знать</strong><br>Поиск перебирает основной текст и все сочетания действия с объектом в обоих порядках. Похожие слова всё ещё могут означать противоположные действия.</p><span class="note-number">INFO / 01</span></div>
     </main>
     <footer><span>ИНДЕКС КОМАНД <b>©</b> MVP</span><span>СДЕЛАНО ДЛЯ ИССЛЕДОВАНИЯ ПОИСКА <span>↗</span></span></footer>
   </div>
