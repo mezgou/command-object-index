@@ -3,10 +3,11 @@ import json
 import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
+from algo.registry import public_algorithms, run_algorithms
+from algo.shared import normalize
 from catalog import DEFAULT_COMMANDS
-from search import normalize, rank
 
 DATA_PATH = os.environ.get('DATA_PATH', '/data/commands.json')
 LOCK = threading.Lock()
@@ -65,7 +66,7 @@ def save_commands(commands):
 
 
 def with_ids(commands):
-    return [{**command, 'id': index + 1} for index, command in enumerate(commands)]
+    return [{**command, 'id': index + 1, 'index': index + 1} for index, command in enumerate(commands)]
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -89,16 +90,27 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         url = urlparse(self.path)
+        if url.path == '/api/algorithms':
+            return self.respond(200, {'algorithms': public_algorithms()})
         if url.path != '/api/commands':
             return self.respond(404, {'error': 'Не найдено'})
-        query = parse_qs(url.query, keep_blank_values=True).get('q', [''])[0]
-        if len(query) > 200:
-            return self.respond(400, {'error': 'Запрос слишком длинный (максимум 200 символов)'})
-        commands = with_ids(self.commands())
-        self.respond(200, {'commands': rank(query, commands) if query.strip() else commands})
+        self.respond(200, {'commands': with_ids(self.commands())})
 
     def do_POST(self):
         path = urlparse(self.path).path
+        if path == '/api/search':
+            try:
+                payload = self.read_payload()
+                query = payload.get('query')
+                algorithm_ids = payload.get('algorithms')
+                if not isinstance(query, str) or not query.strip() or len(query) > 200:
+                    raise ValueError('Введите запрос длиной до 200 символов')
+                if not isinstance(algorithm_ids, list) or not 1 <= len(algorithm_ids) <= 3 or any(not isinstance(item, str) for item in algorithm_ids):
+                    raise ValueError('Выберите от одного до трёх алгоритмов')
+                algorithms = run_algorithms(algorithm_ids, query, with_ids(self.commands()))
+            except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError, AttributeError) as error:
+                return self.respond(400, {'error': str(error) or 'Некорректный запрос'})
+            return self.respond(200, {'algorithms': algorithms})
         if path == '/api/commands/examples':
             with LOCK:
                 save_commands(copy.deepcopy(DEFAULT_COMMANDS))

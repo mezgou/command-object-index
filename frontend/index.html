@@ -4,30 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f6f2">
-  <title>Индекс команд — MVP</title>
+  <title>Индекс команд — платформа</title>
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
   <div class="shell">
-    <header class="topbar"><a class="brand" href="/" aria-label="Индекс команд, главная"><span class="brand-mark">⌘</span><span>индекс<br>команд</span></a><span class="version"><span></span> MVP / 01</span></header>
+    <header class="topbar"><a class="brand" href="/" aria-label="Индекс команд, главная"><span class="brand-mark">⌘</span><span>индекс<br>команд</span></a><span class="version"><span></span> PLATFORM / 01</span></header>
     <main>
-      <div class="intro"><div class="eyebrow">ПОИСК ПО СПИСКУ КОМАНД <span> / </span> ЛЕВЕНШТЕЙН</div><h1>Найдём <em>ближайшее</em><sup>*</sup></h1><div class="subtitle"><span aria-hidden="true">*</span> по мнению Левенштейна</div><p>Введите команду — покажем похожие варианты<br class="desktop"> и объясним, насколько они близки.</p></div>
-      <section class="workspace" aria-label="Поиск команд">
+      <div class="intro"><div class="eyebrow">ПЛАТФОРМА СРАВНЕНИЯ <span> / </span> АЛГОРИТМЫ</div><h1>Один запрос.<br><em>Разные ответы.</em></h1><p>Выберите до трёх алгоритмов и сравните их<br class="desktop"> ранжирование на одном наборе смысловых блоков.</p></div>
+      <section class="workspace platform-workspace" aria-label="Сравнение алгоритмов">
+        <fieldset class="algorithm-picker"><legend>ВЫБЕРИТЕ АЛГОРИТМЫ <span id="algorithm-counter">0 / 3</span></legend><div id="algorithm-options" class="algorithm-options" aria-live="polite"></div></fieldset>
         <label class="search-label" for="query">ВАШ ЗАПРОС <span>01</span></label>
-        <div class="search-wrap"><span class="search-icon" aria-hidden="true">↗</span><input id="query" type="search" maxlength="200" autocomplete="off" placeholder="Например, включи свет"><span class="cursor-hint">↵</span></div>
-        <div class="search-foot"><span>Результаты обновляются по мере ввода</span><span>ТЕКСТ → КАНДИДАТЫ</span></div>
-        <div class="results-header"><div><div class="section-kicker">ВАША БИБЛИОТЕКА</div><h2>Команды <span id="count">00</span></h2></div><button id="toggle-add" class="add-toggle" type="button">＋ <span>Добавить</span></button></div>
-        <form id="add-form" class="command-form" hidden><div class="form-grid"><label>ТЕКСТ КОМАНДЫ<input id="new-command" maxlength="200" placeholder="Например, включи свет на кухне" required></label><label>ВАРИАНТЫ ДЕЙСТВИЯ <small>через запятую; ∅ = без действия</small><input id="new-actions" maxlength="800" placeholder="включить, включи, ∅"></label><label>ВАРИАНТЫ ОБЪЕКТА <small>через запятую</small><input id="new-objects" maxlength="800" placeholder="свет на кухне, кухонный свет"></label></div><p class="form-hint">Оставьте оба списка пустыми для специальной команды: например, «дальше».</p><div class="form-buttons"><button type="submit">Сохранить команду</button><button type="button" id="cancel-add" class="cancel">Отмена</button></div></form>
+        <div class="search-wrap"><span class="search-icon" aria-hidden="true">↗</span><input id="query" type="search" maxlength="200" autocomplete="off" placeholder="Например, включи кухонный свет"><span class="cursor-hint">↵</span></div>
+        <div class="search-foot"><span>Списки обновляются по мере ввода</span><span>ЗАПРОС → РАНЖИРОВАНИЯ</span></div>
         <p id="error" class="error" role="alert" hidden></p>
-        <div class="list-head"><span>СМЫСЛОВОЙ БЛОК</span><span>БЛИЗОСТЬ <span class="help" title="Близость = 1 − расстояние / длина команды. Зелёная рамка: близость от 80%.">ⓘ</span></span></div>
-        <div id="results" class="results" aria-live="polite"></div>
-        <div class="list-footer"><span><i></i> Зелёная рамка — близость от 80%</span><span>ДИСТАНЦИЯ = ЧИСЛО ПРАВОК</span></div>
-        <div class="actions"><button id="examples" type="button">↺ &nbsp; Загрузить пример</button><button id="clear" type="button">Очистить список</button></div>
+        <div class="comparison-heading"><div><div class="section-kicker">СРАВНЕНИЕ</div><h2>Результаты <span id="result-count">00</span></h2></div><span class="comparison-note">0–1 · БОЛЬШЕ = ЛУЧШЕ</span></div>
+        <div id="algorithm-results" class="algorithm-results" aria-live="polite"></div>
       </section>
-      <div class="note"><span class="note-icon">✳</span><p><strong>Важно знать</strong><br>Поиск перебирает основной текст и все сочетания действия с объектом в обоих порядках. Похожие слова всё ещё могут означать противоположные действия.</p><span class="note-number">INFO / 01</span></div>
+      <details class="library" id="library"><summary><span><span class="section-kicker">ВАША БИБЛИОТЕКА</span><strong>Смысловые блоки <b id="count">00</b></strong></span><span class="summary-action">Открыть <i>⌄</i></span></summary><div class="library-inner"><div class="library-actions"><button id="toggle-add" class="add-toggle" type="button">＋ <span>Добавить блок</span></button><button id="examples" type="button">↺ &nbsp; Загрузить пример</button><button id="clear" type="button">Очистить список</button></div><form id="add-form" class="command-form" hidden><div class="form-grid"><label>ТЕКСТ КОМАНДЫ<input id="new-command" maxlength="200" placeholder="Например, включи свет на кухне" required></label><label>ВАРИАНТЫ ДЕЙСТВИЯ <small>через запятую; ∅ = без действия</small><input id="new-actions" maxlength="800" placeholder="включить, включи, ∅"></label><label>ВАРИАНТЫ ОБЪЕКТА <small>через запятую</small><input id="new-objects" maxlength="800" placeholder="свет на кухне, кухонный свет"></label></div><p class="form-hint">Оставьте оба списка пустыми для специальной команды: например, «дальше».</p><div class="form-buttons"><button type="submit">Сохранить блок</button><button type="button" id="cancel-add" class="cancel">Отмена</button></div></form><div id="library-list" class="library-list"></div></div></details>
+      <div class="note"><span class="note-icon">✳</span><p><strong>Контракт алгоритма</strong><br>Каждый метод получает запрос и блоки, а возвращает массив <code>index</code>, <code>text</code>, <code>score</code> от 0 до 1. Новый метод достаточно добавить в папку <code>algo/</code> и зарегистрировать в конфиге.</p><span class="note-number">ALGO / 01</span></div>
     </main>
-    <footer><span>ИНДЕКС КОМАНД <b>©</b> MVP</span><span>СДЕЛАНО ДЛЯ ИССЛЕДОВАНИЯ ПОИСКА <span>↗</span></span></footer>
+    <footer><span>ИНДЕКС КОМАНД <b>©</b> PLATFORM</span><span>ПРОВЕРЯЙТЕ АЛГОРИТМЫ НА ОДНИХ ДАННЫХ <span>↗</span></span></footer>
   </div>
 </body>
 </html>
