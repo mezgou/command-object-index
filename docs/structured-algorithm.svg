@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Структурный индекс: как проходит запрос</title>
+  <desc id="desc">Четыре шага алгоритма structured: слова, разметка, команды, решение — и три возможных исхода.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5f7f3"/><stop offset="1" stop-color="#edf4eb"/></linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="10" stdDeviation="15" flood-color="#294735" flood-opacity=".09"/></filter>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="8" refY="5.5" orient="auto"><path d="M0,0 L10,5.5 L0,11 Z" fill="#78a27d"/></marker>
+    <style>
+      .title{font:700 35px Arial,sans-serif;fill:#1f3025;letter-spacing:-.8px}.subtitle{font:16px Arial,sans-serif;fill:#708173}.eyebrow,.label{font:700 12px Arial,sans-serif;fill:#68806e;letter-spacing:2px}.label{letter-spacing:1.2px}.body{font:15px Arial,sans-serif;fill:#27372b}.code{font:14px monospace;fill:#27372b}.strong{font:700 18px Arial,sans-serif;fill:#27372b}.small{font:13px Arial,sans-serif;fill:#819182}.tag{font:700 11px Arial,sans-serif;letter-spacing:1.2px}
+    </style>
+  </defs>
+  <rect width="1200" height="760" fill="url(#bg)"/><circle cx="1080" cy="82" r="138" fill="#dbead9" opacity=".62"/>
+  <text x="72" y="78" class="eyebrow">ИНДЕКС КОМАНД / СТРУКТУРНЫЙ ИНДЕКС</text><text x="72" y="128" class="title">Сначала структура запроса, потом выбор блока</text><text x="72" y="159" class="subtitle">Действия, слова объектов и служебные слова ищутся по отдельности — смысл «не», «и», «через час» не теряется.</text>
+
+  <rect x="72" y="186" width="1056" height="46" rx="12" fill="#fff" stroke="#dce8da"/><text x="96" y="215" class="label">ЗАПРОС</text><text x="190" y="215" class="code">вклюич свет на кухне и выключи телевизор в спальне</text>
+
+  <rect x="72" y="258" width="228" height="300" rx="20" fill="#fff" filter="url(#shadow)"/>
+  <text x="96" y="296" class="label">01 / СЛОВА</text><text x="96" y="332" class="strong">точно → нечётко</text>
+  <rect x="96" y="352" width="180" height="40" rx="8" fill="#eff7ed"/><text x="110" y="377" class="code">вклюич → включи</text>
+  <text x="96" y="424" class="body">индекс удалений</text><text x="96" y="446" class="body">и расстояние OSA</text>
+  <text x="96" y="484" class="small">0 / 1 / 2 опечатки</text><text x="96" y="504" class="small">по длине слова;</text><text x="96" y="524" class="small">точное совпадение</text><text x="96" y="544" class="small">всегда побеждает</text>
+  <line x1="306" y1="408" x2="340" y2="408" stroke="#78a27d" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="348" y="258" width="228" height="300" rx="20" fill="#e3f0e2" stroke="#c5dcc6" filter="url(#shadow)"/>
+  <text x="372" y="296" class="label">02 / РАЗМЕТКА</text><text x="372" y="332" class="strong">лучшее покрытие</text>
+  <rect x="372" y="352" width="180" height="40" rx="8" fill="#f9fcf8" stroke="#c5dcc6"/><text x="386" y="377" class="code">действие · объект</text>
+  <text x="372" y="424" class="body">служебное слово</text><text x="372" y="446" class="body">или неизвестное</text>
+  <text x="372" y="484" class="small">динамическое</text><text x="372" y="504" class="small">программирование;</text><text x="372" y="524" class="small">неизвестное слово</text><text x="372" y="544" class="small">не выбрасывается</text>
+  <line x1="582" y1="408" x2="616" y2="408" stroke="#78a27d" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="624" y="258" width="228" height="300" rx="20" fill="#fff" filter="url(#shadow)"/>
+  <text x="648" y="296" class="label">03 / КОМАНДЫ</text><text x="648" y="332" class="strong">структура запроса</text>
+  <rect x="648" y="352" width="180" height="40" rx="8" fill="#eff7ed"/><text x="662" y="377" class="code">К1 · К2</text>
+  <text x="648" y="424" class="body">«и» + действие —</text><text x="648" y="446" class="body">новая команда</text>
+  <text x="648" y="484" class="small">«свет и ТВ на кухне»:</text><text x="648" y="504" class="small">место для обоих;</text><text x="648" y="524" class="small">«нет» — исправление,</text><text x="648" y="544" class="small">«или» — выбор</text>
+  <line x1="858" y1="408" x2="892" y2="408" stroke="#78a27d" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="900" y="258" width="228" height="300" rx="20" fill="#e3f0e2" stroke="#c5dcc6" filter="url(#shadow)"/>
+  <text x="924" y="296" class="label">04 / РЕШЕНИЕ</text><text x="924" y="332" class="strong">блок и уверенность</text>
+  <rect x="924" y="352" width="180" height="40" rx="8" fill="#f9fcf8" stroke="#c5dcc6"/><text x="938" y="377" class="code">отрыв ≥ 0.10</text>
+  <text x="924" y="424" class="body">объект блока</text><text x="924" y="446" class="body">объясняет все слова</text>
+  <text x="924" y="484" class="small">ничья «включи /</text><text x="924" y="504" class="small">выключи» и опечатка</text><text x="924" y="524" class="small">в «двери» — только</text><text x="924" y="544" class="small">через уточнение</text>
+
+  <rect x="72" y="590" width="1056" height="118" rx="18" fill="#fff" stroke="#dce8da"/>
+  <rect x="96" y="612" width="92" height="24" rx="12" fill="#e2f2e2"/><text x="111" y="628" class="tag" fill="#2f7743">ACCEPT</text><text x="96" y="664" class="body">вклюич свет на кухне</text><text x="96" y="688" class="small">уверенный выбор блока</text>
+  <rect x="448" y="612" width="96" height="24" rx="12" fill="#f8f0d8"/><text x="461" y="628" class="tag" fill="#86650f">CLARIFY</text><text x="448" y="664" class="body">ыключи свет · включи свет</text><text x="448" y="688" class="small">кандидаты есть, нужно уточнить</text>
+  <rect x="800" y="612" width="88" height="24" rx="12" fill="#f6e3df"/><text x="815" y="628" class="tag" fill="#a2463b">REJECT</text><text x="800" y="664" class="body">не включай свет · через час</text><text x="800" y="688" class="small">безопасный отказ с причиной</text>
+</svg>

@@ -5,6 +5,9 @@ from numbers import Real
 
 from algo.config import ALGORITHMS
 
+DECISIONS = {'accept', 'clarify', 'reject'}
+STATUSES = {'resolved', 'ambiguous', 'incomplete', 'incompatible', 'not_found', 'negated', 'unsupported'}
+
 
 def public_algorithms():
     return [
@@ -37,8 +40,32 @@ def validate_results(results, valid_indexes):
             raise ValueError('Результат содержит неизвестный index или пустой text')
         if isinstance(score, bool) or not isinstance(score, Real) or not 0 <= score <= 1:
             raise ValueError('score должен быть числом от 0 до 1')
-        validated.append({'index': index, 'text': text, 'score': float(score)})
+        validated.append({'index': index, 'text': text, 'score': float(score), **optional_fields(result)})
     return validated
+
+
+def optional_fields(result):
+    """Необязательные поля: решение по запросу, статус и номер команды, объяснение."""
+    extra = {}
+    if 'decision' in result:
+        if result['decision'] not in DECISIONS:
+            raise ValueError('decision должен быть accept, clarify или reject')
+        extra['decision'] = result['decision']
+    if 'status' in result:
+        if result['status'] not in STATUSES:
+            raise ValueError('Неизвестный status результата')
+        extra['status'] = result['status']
+    if 'command' in result:
+        command = result['command']
+        if isinstance(command, bool) or not isinstance(command, int) or command < 1:
+            raise ValueError('command должен быть номером команды от 1')
+        extra['command'] = command
+    if 'explain' in result:
+        explain = result['explain']
+        if not isinstance(explain, list) or len(explain) > 10 or any(not isinstance(line, str) or len(line) > 300 for line in explain):
+            raise ValueError('explain должен быть списком строк')
+        extra['explain'] = explain
+    return extra
 
 
 def run_algorithms(algorithm_ids, query, blocks):

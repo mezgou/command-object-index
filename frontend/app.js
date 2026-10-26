@@ -10,6 +10,8 @@ const addForm = document.querySelector('#add-form');
 let catalog = [];
 let algorithms = [];
 let searchSequence = 0;
+const DECISIONS = {accept: 'УВЕРЕННЫЙ ВЫБОР', clarify: 'НУЖНО УТОЧНЕНИЕ', reject: 'БЕЗОПАСНЫЙ ОТКАЗ'};
+const STATUSES = {resolved: 'выбрано', ambiguous: 'неоднозначно', incomplete: 'неполная команда', incompatible: 'не сочетается', not_found: 'не найдено', negated: 'отрицание', unsupported: 'не поддерживается'};
 
 function showError(message) { error.textContent = message; error.hidden = !message; }
 async function request(url, options) {
@@ -55,11 +57,15 @@ function renderSearch(algorithmResponses) {
   algorithmResponses.forEach(algorithm => {
     const panel = document.createElement('section'); panel.className = 'result-panel';
     const header = document.createElement('header'); const title = document.createElement('h3'); title.textContent = algorithm.name; const description = document.createElement('p'); description.textContent = algorithm.description; header.append(title, description); panel.append(header);
+    const decision = algorithm.results[0]?.decision; if (decision) { const badge = document.createElement('span'); badge.className = `decision decision-${decision}`; badge.textContent = DECISIONS[decision]; title.append(badge); }
     const list = document.createElement('ol'); list.className = 'result-list';
+    if (!algorithm.results.length) { const empty = document.createElement('li'); empty.className = 'result-none'; empty.textContent = 'Кандидатов нет: в запросе не найдено знакомых команд.'; list.append(empty); }
     algorithm.results.forEach((result, position) => {
       const block = blockFor(result.index); const item = document.createElement('li');
       const number = document.createElement('span'); number.className = 'result-index'; number.textContent = String(position + 1).padStart(2, '0');
       const copy = document.createElement('div'); copy.className = 'result-copy'; const played = document.createElement('strong'); played.textContent = result.text; const canonical = document.createElement('span'); canonical.textContent = block && block.text !== result.text ? `блок: ${block.text}` : 'каноническая форма'; copy.append(played, canonical);
+      if (result.status || result.command) { const meta = document.createElement('div'); meta.className = 'result-meta'; if (result.command) { const command = document.createElement('span'); command.className = 'command-chip'; command.textContent = `КОМАНДА ${result.command}`; meta.append(command); } if (result.status) { const status = document.createElement('span'); status.className = `status-chip status-${result.status}`; status.textContent = STATUSES[result.status] || result.status; meta.append(status); } copy.append(meta); }
+      (result.explain || []).forEach(line => { const explain = document.createElement('small'); explain.className = 'result-explain'; explain.textContent = line; copy.append(explain); });
       item.append(number, copy, createScore(result)); list.append(item);
     });
     panel.append(list); algorithmResults.append(panel);

@@ -13,4 +13,18 @@ ALGORITHMS = [
         'module': 'algo.levenshtein_combinations',
         'function': 'search',
     },
+    {
+        'id': 'tfidf-char',
+        'name': 'TF-IDF: 3-граммы',
+        'description': 'Косинус по символьным триграммам с весами IDF; устойчив к опечаткам и лишним словам.',
+        'module': 'algo.tfidf_char',
+        'function': 'search',
+    },
+    {
+        'id': 'structured',
+        'name': 'Структурный индекс',
+        'description': 'Находит действия, объекты и служебные слова; несколько команд, отрицание, безопасный отказ.',
+        'module': 'algo.structured',
+        'function': 'search',
+    },
 ]

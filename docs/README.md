@@ -6,10 +6,13 @@
 
 ![Контракт алгоритма ранжирования](algorithm-contract.svg)
 
+![Структурный индекс](structured-algorithm.svg)
+
 ## Что показывают схемы
 
 - `data-model.svg` — формат смыслового блока: обязательный `text` и необязательные массивы `actions` и `objects`.
-- `algorithm-contract.svg` — стабильный контракт каждого метода: `search(query, blocks)` возвращает ранжированный массив с `index`, `text`, `score`.
+- `algorithm-contract.svg` — стабильный контракт каждого метода: `search(query, blocks)` возвращает ранжированный массив с `index`, `text`, `score` и необязательными `decision`, `status`, `command`, `explain`.
+- `structured-algorithm.svg` — четыре шага метода `structured` (слова, разметка, команды, решение) и три исхода: уверенный выбор, уточнение, безопасный отказ.
 
 Стартовый каталог находится в [backend/app/catalog.py](../backend/app/catalog.py). Он хранится в JSON-файле Docker volume после изменений через интерфейс.
 
