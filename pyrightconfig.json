@@ -1,0 +1,6 @@
+{
+  "include": ["backend/app", "backend/tests"],
+  "extraPaths": ["backend/app"],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "basic"
+}

@@ -4,7 +4,7 @@ import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from search import rank
+from search import rank, parse_compound_commands, is_confident_command, build_clarification_message
 
 DB_PATH = os.environ.get('DB_PATH', '/data/commands.db')
 EXAMPLES = ['включи свет', 'выключи свет', 'приглуши свет', 'открой окно',
@@ -44,7 +44,30 @@ class Handler(BaseHTTPRequestHandler):
             return self.respond(400, {'error': 'Запрос слишком длинный (максимум 200 символов)'})
         with connect() as db:
             commands = [dict(row) for row in db.execute('SELECT id, text FROM commands')]
-        self.respond(200, {'commands': rank(query, commands) if query.strip() else commands})
+        ranked = rank(query, commands) if query.strip() else commands
+        parsed = parse_compound_commands(query) if query.strip() else []
+        clarification = ''
+        if parsed:
+            for item in parsed:
+                if not is_confident_command(item):
+                    clarification = build_clarification_message(item)
+                    break
+        if clarification:
+            return self.respond(200, {
+                'commands': ranked,
+                'clarification': clarification,
+                'query': {
+                    'raw': query,
+                    'parsed': parsed
+                }
+            })
+        self.respond(200, {
+            'commands': ranked,
+            'query': {
+                'raw': query,
+                'parsed': parsed
+            }
+        })
 
     def do_POST(self):
         path = urlparse(self.path).path
@@ -62,7 +85,7 @@ class Handler(BaseHTTPRequestHandler):
             payload = json.loads(self.rfile.read(size))
             text = payload.get('text')
             if not isinstance(text, str):
-                raise ValueError()
+                raise TypeError()
             text = ' '.join(text.split())
             if not text or len(text) > 200:
                 raise ValueError()

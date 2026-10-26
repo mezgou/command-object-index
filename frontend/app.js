@@ -4,15 +4,128 @@ const count = document.querySelector('#count');
 const error = document.querySelector('#error');
 const addForm = document.querySelector('#add-form');
 const newCommand = document.querySelector('#new-command');
+const queryStructure = document.querySelector('#query-structure');
+const executionPlan = document.querySelector('#execution-plan');
 let sequence = 0;
 
 function showError(message) { error.textContent = message; error.hidden = !message; }
+function toActionPhrase(action) {
+  const map = {
+    включ: 'включить',
+    выключ: 'выключить',
+    открой: 'открыть',
+    закрой: 'закрыть',
+    приглуши: 'приглушить',
+    подними: 'поднять',
+    уменьши: 'уменьшить',
+    увеличь: 'увеличить',
+    поставь: 'поставить',
+    сделай: 'сделать'
+  };
+  return map[action] || action || 'выполнить';
+}
+function describeExecutionPart(part) {
+  if (!part) return 'Команда не распознана';
+  if (part.cancel_requested) return 'Отмена текущей команды.';
+  if (part.ambiguous) {
+    if (part.location === 'везде') {
+      return 'Не совсем понял: уточните, что именно нужно исключить из действия.';
+    }
+    return 'Не совсем понял: уточните одно действие, объект или место.';
+  }
+
+  const action = toActionPhrase(part.action);
+  const object = part.object || 'объект';
+  const excluded = part.excluded_locations_display && part.excluded_locations_display.length
+    ? part.excluded_locations_display
+    : (part.excluded_locations || []);
+  const modifier = part.modifier ? `, ${part.modifier}` : '';
+  const location = part.location && part.location !== 'везде' ? ` в ${part.location}` : '';
+  const mediaReferences = {
+    current: 'текущий трек',
+    next: 'следующий трек',
+    previous: 'предыдущий трек',
+    any: 'музыка',
+    search: part.query ? `поиск «${part.query}»` : 'поиск музыки'
+  };
+  const details = [
+    part.delay ? `через ${part.delay}` : null,
+    part.time ? `в ${part.time}` : null,
+    part.recurrence ? `повтор: ${part.recurrence}` : null,
+    part.item ? `элемент списка: ${part.item}` : null,
+    part.media_ref ? `медиа: ${mediaReferences[part.media_ref] || part.media_ref}` : null
+  ].filter(Boolean);
+
+  if (part.intent === 'query') {
+    return `Запрос: ${part.query || object}${location}`;
+  }
+  if (part.location === 'везде' && excluded.length) {
+    return `${action} ${object} везде, кроме ${excluded.join(', ')}` + modifier;
+  }
+
+  const exclusion = excluded.length ? `, кроме ${excluded.join(', ')}` : '';
+  return `${action} ${object}${location}${exclusion}${modifier}${details.length ? `; ${details.join('; ')}` : ''}`;
+}
+function renderExecutionPlan(parsed) {
+  if (!parsed || !parsed.length) {
+    executionPlan.textContent = 'Что выполнится: ожидается ввод команды';
+    return;
+  }
+  if (parsed.some((part) => part.cancel_requested)) {
+    executionPlan.textContent = 'Что выполнится: отмена текущей команды.';
+    return;
+  }
+  if (parsed.some((part) => part.ambiguous)) {
+    executionPlan.textContent = 'Что выполнится: Не совсем понял команду. Повторите её более точно.';
+    return;
+  }
+  const parts = parsed.map(describeExecutionPart).filter(Boolean);
+  if (!parts.length) {
+    executionPlan.textContent = 'Что выполнится: команда не распознана';
+    return;
+  }
+  executionPlan.textContent = `Что выполнится: ${parts.join(' ; ')}`;
+}
 async function request(url, options) {
   const response = await fetch(url, options);
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Не удалось выполнить запрос');
   return data;
 }
+function renderQuerySummary(parsed) {
+  if (!parsed || !parsed.length) {
+    queryStructure.textContent = 'Разбор: ожидается ввод команды';
+    return;
+  }
+  if (parsed.some((part) => part.cancel_requested)) {
+    queryStructure.textContent = 'Разбор: отмена';
+    return;
+  }
+  if (parsed.some((part) => part.ambiguous)) {
+    queryStructure.textContent = 'Разбор: не совсем понял';
+    return;
+  }
+  const summary = parsed.map((part) => {
+    const excluded = part.excluded_locations_display || part.excluded_locations || [];
+    const items = [
+      part.intent ? `[${part.intent}]` : null,
+      part.action,
+      part.object,
+      part.location,
+      excluded.length ? `кроме ${excluded.join(', ')}` : null,
+      part.modifier,
+      part.delay ? `через ${part.delay}` : null,
+      part.time ? `в ${part.time}` : null,
+      part.recurrence ? `повтор: ${part.recurrence}` : null,
+      part.item ? `элемент: ${part.item}` : null,
+      part.media_ref ? `media: ${part.media_ref}` : null,
+      part.query ? `запрос: ${part.query}` : null
+    ].filter(Boolean);
+    return items.length ? items.join(' / ') : 'непонятно';
+  }).join(' | ');
+  queryStructure.textContent = `Разбор: ${summary}`;
+}
+
 function render(commands, searching) {
   count.textContent = String(commands.length).padStart(2, '0');
   results.replaceChildren();
@@ -27,7 +140,8 @@ function render(commands, searching) {
     const label = document.createElement('div'); label.className = 'command';
     const number = document.createElement('span'); number.className = 'index'; number.textContent = String(index + 1).padStart(2, '0');
     const text = document.createElement('span'); text.className = 'command-text'; text.textContent = command.text;
-    label.append(number, text);
+    const summary = document.createElement('span'); summary.className = 'command-summary'; summary.textContent = command.summary || 'структура не разобрана';
+    label.append(number, text, summary);
     const metric = document.createElement('div'); metric.className = 'metric';
     const bar = document.createElement('div'); bar.className = 'bar';
     const fill = document.createElement('span'); fill.style.width = searching ? `${command.similarity}%` : '0%'; bar.append(fill);
@@ -45,7 +159,14 @@ function render(commands, searching) {
 }
 async function refresh() {
   const current = ++sequence; const value = query.value;
-  try { const data = await request(`/api/commands?q=${encodeURIComponent(value)}`); if (current === sequence) { showError(''); render(data.commands, Boolean(value.trim())); } }
+  try { const data = await request(`/api/commands?q=${encodeURIComponent(value)}`); if (current === sequence) {
+    const clarification = data.clarification || '';
+    showError(clarification);
+    const parsed = data.query && data.query.parsed ? data.query.parsed : [];
+    renderQuerySummary(parsed);
+    renderExecutionPlan(parsed);
+    render(data.commands, Boolean(value.trim()));
+  } }
   catch (e) { if (current === sequence) showError('Не удалось загрузить команды. Проверьте подключение к серверу.'); }
 }
 query.addEventListener('input', refresh);

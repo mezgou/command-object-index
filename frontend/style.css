@@ -10,4 +10,4 @@
 .metric-details{display:flex;flex-direction:column;align-items:flex-end;min-width:52px;line-height:1.25}
 .score{font-size:13px;font-weight:800;color:#357b48}.distance{font-size:10px;color:#809183;min-width:0}
 .list-footer i{background:#48a762}
-@media(max-width:650px){.intro h1{font-size:clamp(32px,8vw,42px)}.row.match{padding:12px 8px}.score{font-size:11px}}
+@media(max-width:650px){.intro h1{font-size:clamp(32px,8vw,42px)}.row.match{padding:12px 8px}.score{font-size:11px}}.query-structure{margin-top:12px;padding:10px 14px;border-radius:10px;background:#eef6ee;border:1px solid #dfece0;color:#3a5d45;font-size:12px;letter-spacing:.03em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.execution-plan{margin-top:10px;padding:12px 14px;border-radius:10px;background:#f5f7f4;border:1px solid #e1e7e0;color:#2b3d34;font-size:12px;letter-spacing:.03em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.execution-plan .muted{color:#667a6d;font-weight:600}.command-summary{display:block;font-size:11px;letter-spacing:.06em;color:#5f7d68;text-transform:uppercase;margin-left:auto;padding-left:12px;white-space:nowrap}
