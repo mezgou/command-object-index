@@ -27,6 +27,7 @@ import json
 from functools import lru_cache
 from itertools import product
 
+from algo import tfidf_char
 from algo.shared import DeletionIndex, edit_kind, osa, tokens
 
 try:
@@ -57,6 +58,8 @@ MARGIN = 0.10             # насколько лучший кандидат д�
 READING_MARGIN = 0.05     # то же для прочтений всего запроса
 LIMIT = 5                 # кандидатов на одну команду
 MISSING_ACTION = 0.5      # множитель кандидатов, если действие не названо
+HINTS = 3                 # подсказок TF-IDF, если структурный разбор ничего не нашёл
+HINT_MIN = 0.5            # ниже этой близости TF-IDF подсказка — шум («свари кофе» → 0.36)
 STATUS_ORDER = ['negated', 'unsupported', 'not_found', 'incompatible', 'incomplete', 'ambiguous', 'resolved']
 _CACHE = {}
 _MORPH = []
@@ -70,9 +73,10 @@ def search(query, blocks, morph=False):
     `decision` — решение по всему запросу, `explain` — почему блок здесь.
     """
     analysis = analyze(query, blocks, morph)
+    commands = analysis['commands'] or [{'status': 'not_found', 'candidates': [], 'issues': [], 'source': query}]
     results = []
-    for number, command in enumerate(analysis['commands'], 1):
-        for candidate in command['candidates']:
+    for number, command in enumerate(commands, 1):
+        for candidate in command['candidates'] or hints(command.get('source') or query, blocks):
             results.append({
                 'index': candidate['index'],
                 'text': candidate['text'],
@@ -83,6 +87,17 @@ def search(query, blocks, morph=False):
                 'explain': (candidate['explain'] + command['issues'] + analysis['notes'])[:6],
             })
     return results
+
+
+def hints(text, blocks):
+    """Гибрид для пустого ответа: похожие формулировки от TF-IDF, только как подсказка.
+
+    Структурный разбор не нашёл ни одного кандидата — например, «открой шторы на
+    кухне», когда штор на кухне нет. Решение остаётся отказом, но пользователь
+    видит, что было в каталоге рядом.
+    """
+    found = [result for result in tfidf_char.search(text, blocks) if result['score'] >= HINT_MIN][:HINTS]
+    return [{**result, 'explain': ['может, вы имели в виду… (похожая формулировка, TF-IDF)']} for result in found]
 
 
 def search_morph(query, blocks):
@@ -159,7 +174,7 @@ class Lexicon:
                 self.operators[tuple(tokens(word)) or (word,)] = kind
         function_words = {word for phrase in self.operators for word in phrase}
         self.phrases = {}          # слова фразы → [(вид, alias, множество блоков)]
-        self.objects = []          # (блок, alias, значимые слова alias)
+        self.objects = []          # (блок, alias, значимые слова alias, alias начинается с предлога)
         self.by_word = {}          # слово объекта → номера записей self.objects
         self.empty_action = set()  # блоки, где допустима форма без действия
         for block in blocks:
@@ -178,7 +193,12 @@ class Lexicon:
                 if words:
                     for word in set(words):
                         self.by_word.setdefault(word, []).append(len(self.objects))
-                    self.objects.append((block['index'], alias, words))
+                    first = tokens(alias)[0]
+                    self.objects.append((block['index'], alias, words, self.operators.get((first,)) == 'prep'))
+        # Полные наборы слов объектов: по ним узнаём цель разрывного действия («музыку» в «поставь музыку на паузу»).
+        self.targets = {}
+        for _, alias, words, _ in self.objects:
+            self.targets.setdefault(frozenset(words), alias)
         self.longest = max([len(phrase) for phrase in list(self.phrases) + list(self.operators)] or [1])
         self.vocabulary = {word for phrase in self.phrases for word in phrase} | set(self.by_word)
         self.fuzzy = DeletionIndex(self.vocabulary - function_words)
@@ -339,12 +359,15 @@ class Parser:
         inherit = []
         for number, part in enumerate(parts):
             current = dict(inherited) if number == 0 else {}
-            if not mentions(part) and any(span.kind == 'action' for span in part):
+            own = mentions(part)
+            if not own and any(span.kind == 'action' for span in part):
                 for later in parts[number + 1:]:
                     if mentions(later):
                         current = {'mentions': mentions(later)}
                         notes.append('общий объект для нескольких действий')
                         break
+            if number and any(span.kind == 'action' for span in part) and 'mentions' not in current:
+                current = {**current, **ellipsis(own, parts[:number])}
             inherit.append(current)
         distributive = any(mention.shared for part in parts for mention in mentions(part))
         readings = []
@@ -374,12 +397,18 @@ class Parser:
         return False
 
     def commands(self, spans, inherited, spread):
+        result = self.clause(spans, inherited, spread)
+        for command in result:
+            command['source'] = ' '.join(span.text for span in spans if span.kind != 'op' or span.op in ('prep',))
+        return result
+
+    def clause(self, spans, inherited, spread):
         index = self.index
         actions = [span for span in spans if span.kind == 'action'] or inherited.get('actions', [])
         specials = [span for span in spans if span.kind == 'special']
         ops = {span.op for span in spans if span.op}
         modifiers = [span.text for span in spans if span.op == 'mod']
-        found = mentions(spans) or inherited.get('mentions', [])
+        found = inherited.get('override') or mentions(spans) or inherited.get('mentions', [])
         leading, places, extra = unknown_words(spans)
         issues = []
         if 'neg' in ops:
@@ -397,6 +426,8 @@ class Parser:
                 issues.append('неизвестное место: ' + ', '.join(places))
             if extra:
                 issues.append('непонятные слова: ' + ', '.join(extra))
+        if inherited.get('note'):
+            issues.append(inherited['note'])
         if 'anaphora' in ops and not found:
             issues.append('ссылка на прошлую команду без контекста')
         if len({alt.alias for span in actions for alt in span.alts[:1]}) > 1:
@@ -469,26 +500,42 @@ class Parser:
         records = {number for alts in words for alt in alts for number in index.by_word.get(alt.alias, [])}
         best = {}
         for number in records:
-            item, alias, alias_words = index.objects[number]
+            item, alias, alias_words, complement = index.objects[number]
             matched, typos, unexplained = {}, [], []
             for alts in words:
                 hit = [alt for alt in alts if alt.alias in alias_words]
                 if not hit:
-                    unexplained.append(alts[0].typos[0][0] if alts[0].typos else alts[0].alias)
+                    unexplained.append(alts)
                     continue
                 alt = min(hit, key=lambda alt: alt.distance)
                 matched[alt.alias] = max(matched.get(alt.alias, 0), alt.quality)
                 typos.extend(alt.typos)
-            if unexplained or not matched:
+            target = self.target(unexplained) if unexplained and complement else None
+            if (unexplained and not target) or not matched:
                 continue
+            if target:
+                alias = f'{target[0]} {alias}'          # «на паузу» + цель «музыку» → «музыку на паузу»
+                typos.extend(target[1])
             completeness = len(matched) / len(set(alias_words))
             quality = sum(matched.values()) / len(matched) * (0.6 + 0.4 * completeness)
             explain = [describe(*typo) for typo in typos]
             if completeness < 1:
                 explain.append(f'неполное название: совпало {len(matched)} из {len(set(alias_words))} слов «{alias}»')
+            if target:
+                explain.append(f'«{target[0]}» — цель действия, а не отдельная команда')
             if item not in best or quality > best[item][2]:
                 best[item] = (item, alias, quality, explain, any(how == 'typo' for _, _, how in typos))
         return list(best.values())
+
+    def target(self, unexplained):
+        """Оставшиеся слова — ровно чей-то объект? Тогда это цель разрывного действия."""
+        for words, alias in self.index.targets.items():
+            if len(words) != len(unexplained):
+                continue
+            hits = [[alt for alt in alts if alt.alias in words] for alts in unexplained]
+            if all(hits) and {min(hit, key=lambda alt: alt.distance).alias for hit in hits} == set(words):
+                return alias, [typo for hit in hits for typo in min(hit, key=lambda alt: alt.distance).typos]
+        return None
 
     def candidate(self, item, action, quality, explain, alias, fuzzy=False):
         block = self.index.blocks[item]
@@ -550,6 +597,28 @@ def unknown_words(spans):
         else:
             extra.append(span.text)
     return leading, places, extra
+
+
+def ellipsis(own, previous_parts):
+    """«включи свет на кухне, а в спальне выключи»: объект второй команды — из первой.
+
+    Если у команды есть только место, слова объекта берутся из последнего
+    упоминания предыдущих команд; если объекта нет совсем — упоминание целиком.
+    """
+    previous = next((mentions(part)[-1] for part in reversed(previous_parts) if mentions(part)), None)
+    if previous is None or not previous.words:
+        return {}
+    note = 'объект взят из предыдущей команды'
+    if not own:
+        return {'mentions': [previous], 'note': note}
+    if all(not mention.words for mention in own):
+        copied = []
+        for mention in own:
+            copy = Mention(mention.link, previous.words, copied=True)
+            copy.qualifiers = list(mention.qualifiers)
+            copied.append(copy)
+        return {'override': copied, 'note': note}
+    return {}
 
 
 def has_content(spans):

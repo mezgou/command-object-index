@@ -169,6 +169,26 @@ class StructuredAlgorithmTests(unittest.TestCase):
             decision, _, results = understood(query)
             self.assertEqual((decision, results[0]['status']), ('reject', 'not_found'), query)
 
+    def test_discontinuous_action_takes_known_object_as_target(self):
+        for query in ['поставь музыку на паузу', 'поставь на паузу музыку', 'поставь телевизор в гостиной на паузу']:
+            decision, chosen, results = understood(query)
+            self.assertEqual((decision, chosen), ('accept', ['поставь на паузу']), query)
+            self.assertTrue(any('цель действия' in line for line in results[0]['explain']), query)
+        self.assertNotEqual(understood('выключи музыку свет на кухне')[0], 'accept')
+
+    def test_ellipsis_takes_object_from_previous_command(self):
+        decision, chosen, results = understood('включи свет на кухне, а в спальне выключи')
+        self.assertEqual((decision, chosen), ('accept', ['включи свет на кухне', 'выключи свет в спальне']))
+        self.assertNotIn('объект взят из предыдущей команды', results[0]['explain'])
+        self.assertIn('объект взят из предыдущей команды', results[1]['explain'])
+
+    def test_empty_answer_gets_tfidf_hints_but_stays_refusal(self):
+        results = structured.search('открой шторы на кухне', BLOCKS)
+        self.assertEqual({(result['decision'], result['status']) for result in results}, {('reject', 'not_found')})
+        self.assertEqual(TEXT[results[0]['index']], 'открой шторы в спальне')
+        self.assertTrue(results[0]['explain'][0].startswith('может, вы имели в виду'))
+        self.assertEqual(structured.search('свари кофе', BLOCKS), [])
+
     def test_new_alias_changes_results_without_touching_other_blocks(self):
         blocks = [dict(block) for block in BLOCKS]
         self.assertEqual(understood('включи торшер', blocks)[0], 'reject')
@@ -191,7 +211,7 @@ class StructuredMorphTests(unittest.TestCase):
         self.assertEqual(structured.lemmas('выключа'), frozenset())
         for query in ['ыключи свет на кухне', 'откой дверь']:
             self.assertEqual(structured.search_morph(query, BLOCKS)[0]['decision'], 'clarify', query)
-        self.assertEqual(structured.search_morph('далеко', BLOCKS), [])
+        self.assertEqual({result['decision'] for result in structured.search_morph('далеко', BLOCKS)}, {'reject'})
 
 
 class TfidfAlgorithmTests(unittest.TestCase):
