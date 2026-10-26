@@ -328,8 +328,8 @@ class Parser:
         specials = [span for span in spans if span.kind == 'special']
         ops = {span.op for span in spans if span.op}
         modifiers = [span.text for span in spans if span.op == 'mod']
-        unknown = [span.text for span in spans if span.kind == 'unknown']
         found = mentions(spans) or inherited.get('mentions', [])
+        leading, places, extra = unknown_words(spans)
         issues = []
         if 'neg' in ops:
             issues.append('отрицание: команду не выполнять')
@@ -337,8 +337,15 @@ class Parser:
             issues.append('«всё» и «кроме» пока не поддерживаются')
         if modifiers:
             issues.append('время или число не поддерживаются: ' + ' '.join(modifiers))
-        if unknown:
-            issues.append('нераспознанные слова: ' + ', '.join(unknown))
+        if actions and not found and leading + places + extra:
+            issues.append('неизвестный объект: ' + ', '.join(leading + places + extra))
+        else:
+            if leading:
+                issues.append('пропущено обращение: ' + ', '.join(leading))
+            if places:
+                issues.append('неизвестное место: ' + ', '.join(places))
+            if extra:
+                issues.append('непонятные слова: ' + ', '.join(extra))
         if 'anaphora' in ops and not found:
             issues.append('ссылка на прошлую команду без контекста')
         if len({alt.alias for span in actions for alt in span.alts[:1]}) > 1:
@@ -370,7 +377,8 @@ class Parser:
                     for item in sorted(alt.indexes):
                         candidates.append(self.candidate(item, alt.alias, alt.quality * MISSING_ACTION, explain_typos(alt), '',
                                                          alt.distance > 0))
-            result.append(self.status(candidates, issues + ['не указан объект']))
+            unknown_object = any(issue.startswith('неизвестный объект') for issue in issues)
+            result.append(self.status(candidates, issues if unknown_object else issues + ['не указан объект']))
             return result
 
         for targets, choice in zip(groups, choices):
@@ -447,9 +455,9 @@ class Parser:
         issues = issues + ([missing] if missing else [])
         if any(issue.startswith('отрицание') for issue in issues):
             status = 'negated'
-        elif any(issue.startswith(('«всё»', 'время', 'нераспознанные')) for issue in issues):
+        elif any(issue.startswith(('«всё»', 'время')) for issue in issues):
             status = 'unsupported'
-        elif missing:
+        elif missing or any(issue.startswith(('неизвестный объект', 'неизвестное место')) for issue in issues):
             status = 'not_found'
         elif incomplete or any(issue.startswith(('не указан', 'ссылка')) for issue in issues):
             status = 'incomplete'
@@ -457,7 +465,7 @@ class Parser:
             status = 'incompatible'
         elif not candidates:
             status = 'not_found'
-        elif choice or any(issue.startswith('несколько действий') for issue in issues):
+        elif choice or any(issue.startswith(('несколько действий', 'непонятные слова')) for issue in issues):
             status = 'ambiguous'
         elif candidates[0]['careful']:
             status = 'ambiguous'
@@ -468,6 +476,28 @@ class Parser:
             status = 'ambiguous'
             issues = issues + ['несколько близких вариантов — нужно уточнение']
         return {'status': status, 'candidates': candidates, 'issues': issues}
+
+
+def unknown_words(spans):
+    """Делит незнакомые слова команды по месту в запросе.
+
+    До первого действия, объекта или спецкоманды — обращение («привет», «алиса,
+    включи…»): пропускаем с пометкой. Сразу после «в»/«на» — место, которого нет
+    в каталоге («в гараже»): команду не выбираем. Остальные — лишние слова
+    («включи свет быстро»): кандидат есть, но нужно подтверждение.
+    """
+    first = next((number for number, span in enumerate(spans) if span.kind in ('action', 'object', 'special')), len(spans))
+    leading, places, extra = [], [], []
+    for number, span in enumerate(spans):
+        if span.kind != 'unknown':
+            continue
+        if number < first:
+            leading.append(span.text)
+        elif number and spans[number - 1].op == 'prep':
+            places.append(span.text)
+        else:
+            extra.append(span.text)
+    return leading, places, extra
 
 
 def has_content(spans):

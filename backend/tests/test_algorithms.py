@@ -160,6 +160,15 @@ class StructuredAlgorithmTests(unittest.TestCase):
         statuses = {result['status'] for result in structured.search('выключи свет через час', BLOCKS)}
         self.assertEqual(statuses, {'unsupported'})
 
+    def test_unknown_words_depend_on_their_place(self):
+        decision, chosen, results = understood('привет включи на кухне свет')
+        self.assertEqual((decision, chosen), ('accept', ['включи свет на кухне']))
+        self.assertIn('пропущено обращение: привет', results[0]['explain'])
+        self.assertEqual(understood('включи свет на кухне быстро')[:2], ('clarify', ['включи свет на кухне']))
+        for query in ['включи свет в ванной', 'включи чайник', 'привет включи утюг']:
+            decision, _, results = understood(query)
+            self.assertEqual((decision, results[0]['status']), ('reject', 'not_found'), query)
+
     def test_new_alias_changes_results_without_touching_other_blocks(self):
         blocks = [dict(block) for block in BLOCKS]
         self.assertEqual(understood('включи торшер', blocks)[0], 'reject')
