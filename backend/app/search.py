@@ -13,11 +13,6 @@ from lexicon import (
     LIST_NAMES,
     LOCATIONS,
     LOCATION_PHRASES,
-    MEDIA_ACTIONS,
-    MEDIA_SEARCH_ACTIONS,
-    MEDIA_NOUNS,
-    MEDIA_POINTERS,
-    MEDIA_REFS,
     MODIFIERS,
     NUMBER_WORDS,
     NUMERIC_VALUE_ACTIONS,
@@ -48,12 +43,11 @@ COMMAND_RULE_FIELDS = [
     'time',
     'recurrence',
     'item',
-    'media_ref',
     'query',
     'raw'
 ]
 
-INTENTS = {'device', 'timer', 'alarm', 'list', 'media', 'query', 'cancel', 'unknown'}
+INTENTS = {'device', 'timer', 'alarm', 'list', 'query', 'cancel', 'unknown'}
 
 # Имена из lexicon сохраняются как алиасы, чтобы не менять публичный API модуля.
 STOP_WORDS = FILLER_WORDS
@@ -66,9 +60,6 @@ CANCEL_ALIASES = CANCEL_WORDS
 RECURRENCE_ALIASES = RECURRENCE
 DAY_ALIASES = DAYS
 LIST_ALIASES = LIST_NAMES
-MEDIA_REF_ALIASES = {word: ref for ref, words in MEDIA_REFS.items() for word in words}
-NEXT_MARKERS = MEDIA_REFS['next']
-PREVIOUS_MARKERS = MEDIA_REFS['previous']
 
 
 def empty_command_rule(default_action=None, default_object=None, raw=''):
@@ -88,7 +79,6 @@ def empty_command_rule(default_action=None, default_object=None, raw=''):
         'time': None,
         'recurrence': None,
         'item': None,
-        'media_ref': None,
         'query': None,
         'raw': raw
     }
@@ -312,18 +302,7 @@ def parse_query(tokens):
     return next((token for token in tokens if token in QUERY_ENTITIES), None)
 
 
-def parse_media_ref(tokens):
-    """Указатель (этот/следующий/предыдущий) сильнее существительного (трек/песня)."""
-    ref = None
-    for word in tokens:
-        if word in MEDIA_POINTERS:
-            return MEDIA_REF_ALIASES[word]
-        if word in MEDIA_NOUNS:
-            ref = MEDIA_REF_ALIASES[word]
-    return ref
-
-
-def detect_intent(tokens, action, object_text, location, delay, time_value, recurrence, item, media_ref, query):
+def detect_intent(tokens, action, object_text, location, delay, time_value, recurrence, item, query):
     if any(word in CANCEL_ALIASES for word in tokens):
         return 'cancel'
     if any(word in QUESTION_WORDS for word in tokens) or (query and action is None):
@@ -334,8 +313,6 @@ def detect_intent(tokens, action, object_text, location, delay, time_value, recu
         return 'alarm'
     if action == 'добавь' or item:
         return 'list'
-    if media_ref and (action in MEDIA_ACTIONS or object_text in {'музыка', 'громкость', 'звук', 'лайк'}):
-        return 'media'
     if action is not None and object_text is not None:
         return 'device'
     return 'unknown'
@@ -349,7 +326,6 @@ def extract_slots(tokens):
         'time': None,
         'recurrence': None,
         'item': None,
-        'media_ref': None,
         'query': None,
         'location': None,
     }
@@ -419,25 +395,6 @@ def extract_slots(tokens):
         consumed.update({index for index, token in enumerate(tokens) if token in LIST_MARKERS})
         consumed.update(list_indices)
 
-    slots['media_ref'] = parse_media_ref(tokens)
-    if slots['media_ref']:
-        consumed.update({index for index, token in enumerate(tokens) if token in MEDIA_POINTERS or token in MEDIA_NOUNS})
-
-    remaining_indices = [index for index in range(len(tokens)) if index not in consumed]
-    media_action_indices = [
-        index for index in remaining_indices
-        if ACTIONS.get(tokens[index]) in MEDIA_SEARCH_ACTIONS
-    ]
-    has_known_entity = any(classify_token(tokens[index]).get('kind') == 'entity' for index in remaining_indices)
-    if media_action_indices and not has_known_entity:
-        action_index = min(media_action_indices)
-        unknown_indices = [index for index in remaining_indices if classify_token(tokens[index]).get('kind') == 'unknown']
-        search_terms = [tokens[index] for index in unknown_indices if tokens[index] not in FILLER_WORDS]
-        if search_terms and all(index > action_index for index in unknown_indices):
-            slots['media_ref'] = 'search'
-            slots['query'] = ' '.join(search_terms)
-            consumed.update(unknown_indices)
-
     query_marker_indices = [index for index, token in enumerate(tokens) if token in QUERY_MARKERS]
     if query_marker_indices:
         slots['query'] = parse_query(tokens)
@@ -449,7 +406,7 @@ def extract_slots(tokens):
     return slots, remaining
 
 
-def resolve_rule(slots, rule, object_explicit):
+def resolve_rule(slots, rule):
     """Второй проход: собирает итоговое правило из слотов и разобранного остатка.
 
     Здесь только правила приоритета слотов, без частных случаев для отдельных фраз.
@@ -461,17 +418,14 @@ def resolve_rule(slots, rule, object_explicit):
         rule['action'] = action
     query = slots['query']
     item = slots['item']
-    media_ref = slots['media_ref']
 
     if slots.get('location'):
         rule['location'] = slots['location']
         rule['location_scope'] = slots['location']
-    if query and media_ref != 'search':
+    if query:
         object_text = query
     elif item:
         object_text = item
-    elif media_ref and not object_explicit:
-        object_text = 'музыка'
     elif object_text is None and action in {'сделай', 'приглуши', 'подними', 'уменьши', 'увеличь'} and rule['modifier']:
         object_text = 'громкость'
     elif object_text is None and action == 'разбуди':
@@ -479,7 +433,7 @@ def resolve_rule(slots, rule, object_explicit):
 
     intent = 'cancel' if rule['cancel_requested'] else detect_intent(
         [], action, object_text, rule['location'], slots['delay'], slots['time'],
-        slots['recurrence'], item, media_ref, query
+        slots['recurrence'], item, query
     )
 
     rule.update({
@@ -489,7 +443,6 @@ def resolve_rule(slots, rule, object_explicit):
         'time': slots['time'],
         'recurrence': slots['recurrence'],
         'item': item,
-        'media_ref': media_ref,
         'query': query,
     })
     return rule
@@ -504,7 +457,6 @@ def is_rule_complete(rule):
         'alarm': ('object',),
         'timer': ('object', 'delay'),
         'list': ('item',),
-        'media': ('media_ref',),
         'device': ('action', 'object'),
     }
     fields = required_fields.get(intent)
@@ -512,8 +464,6 @@ def is_rule_complete(rule):
         return False
     if intent == 'alarm':
         return bool(rule.get('time') or rule.get('recurrence'))
-    if intent == 'media' and rule.get('media_ref') == 'search':
-        return bool(rule.get('query'))
     return True
 
 
@@ -538,7 +488,6 @@ def parse_command_rule(text, default_action=None, default_object=None):
         'time': None,
         'recurrence': None,
         'item': None,
-        'media_ref': None,
         'query': None,
     }
 
@@ -623,7 +572,7 @@ def parse_command_rule(text, default_action=None, default_object=None):
         state['ambiguous'] = True
         state['location'] = state['location_candidates'][0]
 
-    if len(set(state['object_tokens'])) > 1 and any(tok in {'свет', 'музыка'} for tok in state['object_tokens']):
+    if len(set(state['object_tokens'])) > 1 and 'свет' in state['object_tokens']:
         state['ambiguous'] = True
     if state['unsupported_tokens'] or state['pending_exclusion']:
         state['ambiguous'] = True
@@ -650,7 +599,7 @@ def parse_command_rule(text, default_action=None, default_object=None):
 def parse_intent_rule(text, default_action=None, default_object=None):
     """Разбирает фразу в два прохода.
 
-    1. extract_slots вырезает слоты времени, списка, медиа и вопроса.
+    1. extract_slots вырезает слоты времени, списка и вопроса.
     2. parse_command_rule разбирает оставшиеся слова как action/object/location/modifier.
 
     Возвращает правило той же схемы, что и parse_command_rule, с заполненным intent.
@@ -661,11 +610,10 @@ def parse_intent_rule(text, default_action=None, default_object=None):
         return parse_command_rule(text, default_action=default_action, default_object=default_object)
 
     slots, remaining = extract_slots(tokens)
-    object_explicit = any(classify_token(token).get('kind') == 'entity' for token in remaining)
     rule = parse_command_rule(' '.join(remaining),
                               default_action=default_action, default_object=default_object)
     rule['raw'] = text
-    rule = resolve_rule(slots, rule, object_explicit)
+    rule = resolve_rule(slots, rule)
 
     if rule['intent'] == 'cancel':
         rule['cancel_requested'] = True
@@ -734,7 +682,7 @@ def match_command_rule(query_rule, catalog_rule):
         return False
     if not compare('modifier'):
         return False
-    for field_name in ('intent', 'delay', 'time', 'recurrence', 'item', 'media_ref', 'query'):
+    for field_name in ('intent', 'delay', 'time', 'recurrence', 'item', 'query'):
         if not compare(field_name):
             return False
 
@@ -799,7 +747,6 @@ def parse_compound_commands(text):
                 'time': None,
                 'recurrence': None,
                 'item': None,
-                'media_ref': None,
                 'query': None,
                 'raw': part
             })
@@ -823,7 +770,6 @@ def parse_compound_commands(text):
                 'time': None,
                 'recurrence': None,
                 'item': None,
-                'media_ref': None,
                 'query': None,
                 'raw': part
             })
@@ -878,10 +824,8 @@ def format_command_summary(parsed):
                 parts.append('повтор: ' + item['recurrence'])
             if item.get('item'):
                 parts.append('элемент: ' + item['item'])
-            if item.get('media_ref'):
-                parts.append('медиа: ' + item['media_ref'])
             if item.get('query'):
-                parts.append(('медиа-поиск: ' if item.get('media_ref') == 'search' else 'запрос: ') + item['query'])
+                parts.append('запрос: ' + item['query'])
             labels.append(' / '.join(parts) if parts else 'непонятно')
         return ' | '.join(labels)
     if parsed.get('cancel_requested'):
@@ -908,10 +852,8 @@ def format_command_summary(parsed):
         parts.append('повтор: ' + parsed['recurrence'])
     if parsed.get('item'):
         parts.append('элемент: ' + parsed['item'])
-    if parsed.get('media_ref'):
-        parts.append('медиа: ' + parsed['media_ref'])
     if parsed.get('query'):
-        parts.append(('медиа-поиск: ' if parsed.get('media_ref') == 'search' else 'запрос: ') + parsed['query'])
+        parts.append('запрос: ' + parsed['query'])
     return ' / '.join(parts) if parts else 'непонятно'
 
 

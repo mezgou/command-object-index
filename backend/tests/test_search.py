@@ -80,8 +80,8 @@ class SearchTests(unittest.TestCase):
         self.assertEqual([item['id'] for item in ranked], [1, 2])
 
     def test_compound_requests_are_split(self):
-        parts = split_compound_parts('включи свет и музыку')
-        self.assertEqual(parts, ['включи свет', 'музыку'])
+        parts = split_compound_parts('включи свет и окно')
+        self.assertEqual(parts, ['включи свет', 'окно'])
         self.assertEqual(normalize_tokens('свет, будь добр, включи'), ['свет', 'включ'])
 
     def test_parse_command_with_location(self):
@@ -91,9 +91,9 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(parsed['location'], 'ванная')
 
     def test_parse_command_with_location_in_locative_case(self):
-        parsed = parse_command('включи музыку в гостинной')
-        self.assertEqual(parsed['action'], 'включ')
-        self.assertEqual(parsed['object'], 'музыка')
+        parsed = parse_command('открой дверь в гостинной')
+        self.assertEqual(parsed['action'], 'открой')
+        self.assertEqual(parsed['object'], 'дверь')
         self.assertEqual(parsed['location'], 'гостиная')
 
     def test_parse_device_modifier_in_location(self):
@@ -117,12 +117,13 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(parsed['modifier'], '22 градуса')
 
     def test_parse_compound_command_with_multiple_targets(self):
-        parsed = parse_compound_commands('включи свет и музыку')
+        parsed = parse_compound_commands('включи свет и открой окно')
         self.assertEqual([(part['action'], part['object']) for part in parsed], [
-            ('включ', 'свет'), ('включ', 'музыка')
+            ('включ', 'свет'), ('открой', 'окно')
         ])
-        self.assertEqual([part['intent'] for part in parsed], ['device', 'media'])
-        self.assertTrue(all('time' in part and 'media_ref' in part for part in parsed))
+        self.assertEqual([part['intent'] for part in parsed], ['device', 'device'])
+        self.assertTrue(all('time' in part and 'query' in part for part in parsed))
+        self.assertTrue(all('media_ref' not in part for part in parsed))
 
     def test_parse_compound_command_keeps_cancel_intent(self):
         parsed = parse_compound_commands('включи свет и я передумал')
@@ -146,17 +147,19 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(parsed['location'], 'везде')
         self.assertEqual(parsed['excluded_locations'], ['спальня'])
 
-    def test_parse_volume_restriction(self):
-        parsed = parse_command_rule('включи музыку только тихо')
-        self.assertEqual(parsed['action'], 'включ')
-        self.assertEqual(parsed['object'], 'музыка')
-        self.assertEqual(parsed['modifier'], 'тихо')
+    def test_volume_control_remains_a_device_command(self):
+        parsed = parse_intent_rule('сделай громче')
+        self.assertEqual(parsed['intent'], 'device')
+        self.assertEqual(parsed['action'], 'сделай')
+        self.assertEqual(parsed['object'], 'громкость')
+        self.assertEqual(parsed['modifier'], 'громче')
+        self.assertTrue(is_confident_command(parsed))
 
     def test_parse_rule_keeps_compound_exclusions(self):
-        parsed = parse_compound_commands('включи свет везде кроме спальни и музыку только тихо')
+        parsed = parse_compound_commands('включи свет везде кроме спальни и открой шторы наполовину')
         self.assertEqual(parsed[0]['action'], 'включ')
         self.assertEqual(parsed[0]['excluded_locations'], ['спальня'])
-        self.assertEqual(parsed[1]['modifier'], 'тихо')
+        self.assertEqual(parsed[1]['modifier'], 'наполовину')
 
     def test_format_command_summary_includes_exclusions_and_modifiers(self):
         parsed = parse_command_rule('включи свет везде кроме спальни только тихо')
@@ -178,18 +181,18 @@ class SearchTests(unittest.TestCase):
         self.assertFalse(match_command_rule(query_rule, catalog_rule))
 
     def test_parse_command_with_choice_is_ambiguous(self):
-        parsed = parse_command_rule('включи свет или музыку')
+        parsed = parse_command_rule('включи свет или окно')
         self.assertTrue(parsed['ambiguous'])
         self.assertFalse(is_confident_command(parsed))
 
     def test_parse_unknown_schema_tokens_requires_rephrase(self):
-        parsed = parse_command_rule('если в квартире двигаются, включи музыку')
+        parsed = parse_command_rule('если в квартире двигаются, включи свет')
         self.assertTrue(parsed['ambiguous'])
         self.assertFalse(is_confident_command(parsed))
         self.assertIn('повторите', build_clarification_message(parsed).lower())
 
     def test_compound_command_with_unknown_trigger_is_not_executed(self):
-        parsed = parse_compound_commands('если в квартире двигаются, включи музыку')
+        parsed = parse_compound_commands('если в квартире двигаются, включи свет')
         self.assertEqual(len(parsed), 1)
         self.assertTrue(parsed[0].get('ambiguous'))
         self.assertIsNone(parsed[0].get('action'))
@@ -212,7 +215,7 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(rule['modifier'], None)
 
     def test_build_clarification_message_for_ambiguous_command(self):
-        rule = parse_command_rule('включи свет или музыку')
+        rule = parse_command_rule('включи свет или окно')
         message = build_clarification_message(rule)
         self.assertIn('повторите', message.lower())
         self.assertIn('не совсем понял', message.lower())
@@ -228,9 +231,9 @@ class SearchTests(unittest.TestCase):
         self.assertTrue(is_cancel_intent(parsed))
 
     def test_parse_exclusion_after_global_location_with_but_not(self):
-        parsed = parse_command_rule('включи музыку везде, но не в гостиной')
+        parsed = parse_command_rule('включи свет везде, но не в гостиной')
         self.assertEqual(parsed['action'], 'включ')
-        self.assertEqual(parsed['object'], 'музыка')
+        self.assertEqual(parsed['object'], 'свет')
         self.assertEqual(parsed['location'], 'везде')
         self.assertEqual(parsed['excluded_locations'], ['гостиная'])
         self.assertIn('гостиной', parsed['excluded_locations_display'])
@@ -246,9 +249,7 @@ class SearchTests(unittest.TestCase):
             'Поставь будильник на завтра на семь утра': ('alarm', 'поставь', 'будильник', None, None),
             'Отключи все будильники на выходных': ('alarm', 'выключ', 'будильник', None, None),
             'Добавь молоко в список покупок': ('list', 'добавь', 'молоко', None, None),
-            'Поставь лайк этой песне': ('media', 'поставь', 'лайк', None, None),
             'Сделай громче': ('device', 'сделай', 'громкость', None, None),
-            'Включи следующий трек': ('media', 'включ', 'музыка', None, None),
             'Покажи камеру у входной двери': ('device', 'покажи', 'камера', 'входная дверь', None),
             'Какая температура на кухне?': ('query', None, 'температура', 'кухня', None),
             'Алиса, я хочу, чтобы ты разбудила меня на выходных во время рассвета': ('alarm', 'разбуди', 'будильник', None, None),
@@ -267,8 +268,6 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(parse_intent_rule('Поставь будильник на завтра на семь утра')['time'], 'завтра 07:00 утра')
         self.assertEqual(parse_intent_rule('Отключи все будильники на выходных')['recurrence'], 'выходные')
         self.assertEqual(parse_intent_rule('Добавь молоко в список покупок')['item'], 'молоко')
-        self.assertEqual(parse_intent_rule('Поставь лайк этой песне')['media_ref'], 'current')
-        self.assertEqual(parse_intent_rule('Включи следующий трек')['media_ref'], 'next')
         self.assertEqual(parse_intent_rule('Алиса, я хочу, чтобы ты разбудила меня на выходных во время рассвета')['time'], 'рассвет')
 
     def test_api_compound_parser_preserves_intent_slots(self):
@@ -278,13 +277,21 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(parsed['location'], 'кухня')
         self.assertTrue(is_confident_command(parsed))
 
-    def test_unknown_music_title_becomes_open_search_query(self):
-        parsed = parse_intent_rule('включи Кино')
-        self.assertEqual(parsed['intent'], 'media')
-        self.assertEqual(parsed['object'], 'музыка')
-        self.assertEqual(parsed['media_ref'], 'search')
-        self.assertEqual(parsed['query'], 'кино')
-        self.assertTrue(is_confident_command(parsed))
+    def test_media_phrases_are_not_confidently_parsed(self):
+        phrases = [
+            'включи музыку',
+            'включи следующий трек',
+            'поставь лайк этой песне',
+            'поставь на паузу',
+            'включи Кино',
+        ]
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                parsed = parse_intent_rule(phrase)
+                self.assertEqual(parsed['intent'], 'unknown')
+                self.assertTrue(parsed['ambiguous'])
+                self.assertFalse(is_confident_command(parsed))
+                self.assertNotIn('media_ref', parsed)
 
     def test_bare_volume_number_is_explicit_set_value(self):
         parsed = parse_intent_rule('громкость 20')

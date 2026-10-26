@@ -41,19 +41,12 @@ function describeExecutionPart(part) {
     : (part.excluded_locations || []);
   const modifier = part.modifier ? `, ${part.modifier}` : '';
   const location = part.location && part.location !== 'везде' ? ` в ${part.location}` : '';
-  const mediaReferences = {
-    current: 'текущий трек',
-    next: 'следующий трек',
-    previous: 'предыдущий трек',
-    any: 'музыка',
-    search: part.query ? `поиск «${part.query}»` : 'поиск музыки'
-  };
+
   const details = [
     part.delay ? `через ${part.delay}` : null,
     part.time ? `в ${part.time}` : null,
     part.recurrence ? `повтор: ${part.recurrence}` : null,
-    part.item ? `элемент списка: ${part.item}` : null,
-    part.media_ref ? `медиа: ${mediaReferences[part.media_ref] || part.media_ref}` : null
+    part.item ? `элемент списка: ${part.item}` : null
   ].filter(Boolean);
 
   if (part.intent === 'query') {
@@ -118,7 +111,6 @@ function renderQuerySummary(parsed) {
       part.time ? `в ${part.time}` : null,
       part.recurrence ? `повтор: ${part.recurrence}` : null,
       part.item ? `элемент: ${part.item}` : null,
-      part.media_ref ? `media: ${part.media_ref}` : null,
       part.query ? `запрос: ${part.query}` : null
     ].filter(Boolean);
     return items.length ? items.join(' / ') : 'непонятно';
