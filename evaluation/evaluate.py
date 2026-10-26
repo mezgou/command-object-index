@@ -160,8 +160,13 @@ def main():
     print(header)
     print('-' * len(header))
     report = {}
-    for identifier in ids:
-        summary, rows = evaluate(configured[identifier], dataset, blocks, args.threshold)
+    for identifier in list(ids):
+        try:
+            summary, rows = evaluate(configured[identifier], dataset, blocks, args.threshold)
+        except ValueError as error:          # например, нет pymorphy3 для structured-morph
+            print(f'{identifier:<28}пропущен: {error}')
+            ids.remove(identifier)
+            continue
         report[identifier] = {'summary': summary, 'by_kind': by_kind(rows), 'rows': rows}
         print(f'{identifier:<28}{summary["score"]:>7.3f}{summary["top1"]:>8.3f}{summary["mrr"]:>7.3f}{summary["recall5"]:>11.3f}'
               f'{summary["confident_correct"]:>13.3f}{summary["safe_refusal"]:>14.3f}{summary["dangerous"]:>9}'

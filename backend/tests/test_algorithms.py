@@ -92,7 +92,7 @@ class RegistryAndDataTests(unittest.TestCase):
             'description': 'Сравнивает запрос со всеми комбинациями «действие + объект» и «объект + действие».',
         })
         self.assertEqual([algorithm['id'] for algorithm in public_algorithms()],
-                         ['levenshtein-combinations', 'tfidf-char', 'structured'])
+                         ['levenshtein-combinations', 'tfidf-char', 'structured', 'structured-morph'])
 
     def test_optional_fields_are_validated_and_passed_through(self):
         result = {'index': 1, 'text': 'дальше', 'score': 1, 'decision': 'accept', 'status': 'resolved',
@@ -176,6 +176,22 @@ class StructuredAlgorithmTests(unittest.TestCase):
         bedroom['objects'] = bedroom['objects'] + ['торшер']
         self.assertEqual(understood('включи торшер', blocks)[:2], ('accept', ['включи свет в спальне']))
         self.assertEqual(understood('выключи свет в спальне', blocks)[:2], ('accept', ['выключи свет в спальне']))
+
+
+@unittest.skipUnless(structured.pymorphy3, 'нужен pymorphy3: pip install -r backend/requirements.txt')
+class StructuredMorphTests(unittest.TestCase):
+    def test_word_forms_match_by_lemma(self):
+        for query, expected in [('откройте шторы в гостиной', 'открой шторы в гостиной'), ('погасите люстру', 'выключи свет в гостиной'),
+                                ('включи лампы на кухне', 'включи свет на кухне'), ('музыка выключи', 'выключи музыку')]:
+            results = structured.search_morph(query, BLOCKS)
+            self.assertEqual((results[0]['decision'], TEXT[results[0]['index']], results[0]['score']), ('accept', expected, 1.0), query)
+        self.assertIn('«откройте» → «открой»: другая форма слова', structured.search_morph('откройте шторы в гостиной', BLOCKS)[0]['explain'])
+
+    def test_lemmas_do_not_bypass_typo_safety(self):
+        self.assertEqual(structured.lemmas('выключа'), frozenset())
+        for query in ['ыключи свет на кухне', 'откой дверь']:
+            self.assertEqual(structured.search_morph(query, BLOCKS)[0]['decision'], 'clarify', query)
+        self.assertEqual(structured.search_morph('далеко', BLOCKS), [])
 
 
 class TfidfAlgorithmTests(unittest.TestCase):

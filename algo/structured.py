@@ -24,9 +24,15 @@
 """
 
 import json
+from functools import lru_cache
 from itertools import product
 
-from algo.shared import DeletionIndex, edit_kind, tokens
+from algo.shared import DeletionIndex, edit_kind, osa, tokens
+
+try:
+    import pymorphy3
+except ImportError:           # метод structured-morph без библиотеки недоступен, structured работает
+    pymorphy3 = None
 
 OPERATORS = {
     'and': ['и', 'а также', ','],
@@ -53,16 +59,17 @@ LIMIT = 5                 # кандидатов на одну команду
 MISSING_ACTION = 0.5      # множитель кандидатов, если действие не названо
 STATUS_ORDER = ['negated', 'unsupported', 'not_found', 'incompatible', 'incomplete', 'ambiguous', 'resolved']
 _CACHE = {}
+_MORPH = []
 
 
-def search(query, blocks):
+def search(query, blocks, morph=False):
     """Возвращает ранжированные блоки по контракту платформы и разбор запроса.
 
     Результаты идут по командам запроса: сначала кандидаты первой команды,
     потом второй. Поле `command` — номер команды, `status` — её статус,
     `decision` — решение по всему запросу, `explain` — почему блок здесь.
     """
-    analysis = analyze(query, blocks)
+    analysis = analyze(query, blocks, morph)
     results = []
     for number, command in enumerate(analysis['commands'], 1):
         for candidate in command['candidates']:
@@ -78,9 +85,35 @@ def search(query, blocks):
     return results
 
 
-def analyze(query, blocks):
+def search_morph(query, blocks):
+    """То же, что `search`, но слова сравниваются ещё и по лемме (pymorphy3).
+
+    «включите», «погасите», «лампы», «музыка» совпадают с «включи», «погаси»,
+    «лампу», «музыку» из каталога без перечисления всех форм в блоках.
+    """
+    if pymorphy3 is None:
+        raise ValueError('Для метода structured-morph нужен pymorphy3: pip install -r backend/requirements.txt')
+    return search(query, blocks, morph=True)
+
+
+@lru_cache(maxsize=50000)
+def lemmas(word):
+    """Начальные формы слова по словарю OpenCorpora; для незнакомых словарю слов — ничего.
+
+    Догадкам pymorphy о незнакомых словах не верим: опечатка «выключа» иначе
+    получила бы лемму и обошла проверку ничьей «включи / выключи».
+    """
+    if not _MORPH:
+        _MORPH.append(pymorphy3.MorphAnalyzer())
+    morph = _MORPH[0]
+    if not morph.word_is_known(word):
+        return frozenset()
+    return frozenset(parse.normal_form.replace('ё', 'е') for parse in morph.parse(word))
+
+
+def analyze(query, blocks, morph=False):
     """Полный разбор: решение, команды с кандидатами и пояснения."""
-    index = lexicon_for(blocks)
+    index = lexicon_for(blocks, morph)
     readings = []
     paths = index.segment(tokens(query))
     for items in paths:
@@ -105,20 +138,20 @@ def decide(commands, close_readings, conflict):
     return 'clarify'
 
 
-def lexicon_for(blocks):
+def lexicon_for(blocks, morph=False):
     """Индекс строится один раз на содержимое каталога: правка блока меняет ключ."""
-    key = json.dumps(blocks, ensure_ascii=False, sort_keys=True)
+    key = (morph, json.dumps(blocks, ensure_ascii=False, sort_keys=True))
     if key not in _CACHE:
         if len(_CACHE) >= 4:
             _CACHE.pop(next(iter(_CACHE)))
-        _CACHE[key] = Lexicon(blocks)
+        _CACHE[key] = Lexicon(blocks, morph)
     return _CACHE[key]
 
 
 class Lexicon:
     """Словарь блоков: фразы действий и спецкоманд, слова объектов, служебные слова."""
 
-    def __init__(self, blocks):
+    def __init__(self, blocks, morph=False):
         self.blocks = {block['index']: block for block in blocks}
         self.operators = {}
         for kind, words in OPERATORS.items():
@@ -150,6 +183,15 @@ class Lexicon:
         self.vocabulary = {word for phrase in self.phrases for word in phrase} | set(self.by_word)
         self.fuzzy = DeletionIndex(self.vocabulary - function_words)
         self.function_words = function_words
+        # Лемма → слова каталога. Только действия и объекты: у спецкоманд леммы
+        # опасны («далеко» и «дальше» — обе формы слова «далёкий»).
+        self.by_lemma = {}
+        if morph:
+            words = {word for phrase, entries in self.phrases.items() for word in phrase
+                     if any(entry[0] == 'action' for entry in entries)} | set(self.by_word)
+            for word in words - function_words:
+                for lemma in lemmas(word):
+                    self.by_lemma.setdefault(lemma, set()).add(word)
 
     def add_phrase(self, kind, alias, index):
         phrase = tuple(tokens(alias))
@@ -163,16 +205,25 @@ class Lexicon:
         entries.append((kind, alias, {index}))
 
     def expand(self, word):
-        """Варианты слова: точное совпадение побеждает, иначе ближайшие по OSA."""
+        """Варианты слова `(слово каталога, опечаток, как совпало)`.
+
+        Точное совпадение побеждает; затем та же лемма (если включена морфология);
+        иначе ближайшие по OSA. `как`: exact | form | typo.
+        """
         if word in self.vocabulary:
-            return [(word, 0)]
+            return [(word, 0, 'exact')]
         if word in self.function_words or word.isdigit():
             return []
+        if self.by_lemma:
+            forms = {form for lemma in lemmas(word) for form in self.by_lemma.get(lemma, ())}
+            forms = sorted(forms, key=lambda form: (osa(word, form), form))    # ближайшая форма — в текст ответа
+            if forms:
+                return [(form, 0, 'form') for form in forms][:6]
         found = self.fuzzy.lookup(word)
         if not found:
             return []
         best = found[0][1]
-        return [item for item in found if item[1] <= best + 1][:6]
+        return [(found_word, distance, 'typo') for found_word, distance in found if distance <= best + 1][:6]
 
     def segment(self, words, beam=4, tie=0.05):
         """Лучшие покрытия слов спанами; несколько — только при почти равной оценке."""
@@ -188,17 +239,17 @@ class Lexicon:
                     continue
                 by_kind = {}
                 for combo in product(*[variants[start + shift][:3] for shift in range(length)]):
-                    for kind, alias, indexes in self.phrases.get(tuple(word for word, _ in combo), []):
-                        distance = sum(distance for _, distance in combo)
-                        typos = [(words[start + shift], word) for shift, (word, d) in enumerate(combo) if d]
+                    for kind, alias, indexes in self.phrases.get(tuple(word for word, _, _ in combo), []):
+                        distance = sum(distance for _, distance, _ in combo)
+                        typos = [(words[start + shift], word, how) for shift, (word, _, how) in enumerate(combo) if how != 'exact']
                         by_kind.setdefault(kind, []).append(Alt(alias, distance, typos, indexes))
                 for kind, alts in by_kind.items():
                     alts = best_alternatives(alts)
                     quality = 1 - FUZZY_PENALTY * alts[0].distance
                     options[start].append((start + length, length * quality - 0.01, Span(kind, start, length, words, alts=alts)))
-            if variants[start] and any(word in self.by_word for word, _ in variants[start]):
-                alts = [Alt(word, distance, [(words[start], word)] if distance else [], set())
-                        for word, distance in variants[start] if word in self.by_word]
+            if variants[start] and any(word in self.by_word for word, _, _ in variants[start]):
+                alts = [Alt(word, distance, [(words[start], word, how)] if how != 'exact' else [], set())
+                        for word, distance, how in variants[start] if word in self.by_word]
                 alts = best_alternatives(alts)
                 quality = 1 - FUZZY_PENALTY * alts[0].distance
                 options[start].append((start + 1, quality - 0.02, Span('object', start, 1, words, alts=alts)))
@@ -432,11 +483,11 @@ class Parser:
                 continue
             completeness = len(matched) / len(set(alias_words))
             quality = sum(matched.values()) / len(matched) * (0.6 + 0.4 * completeness)
-            explain = [f'«{typed}» → «{word}»: {edit_kind(typed, word)}' for typed, word in typos]
+            explain = [describe(*typo) for typo in typos]
             if completeness < 1:
                 explain.append(f'неполное название: совпало {len(matched)} из {len(set(alias_words))} слов «{alias}»')
             if item not in best or quality > best[item][2]:
-                best[item] = (item, alias, quality, explain, bool(typos))
+                best[item] = (item, alias, quality, explain, any(how == 'typo' for _, _, how in typos))
         return list(best.values())
 
     def candidate(self, item, action, quality, explain, alias, fuzzy=False):
@@ -445,7 +496,8 @@ class Parser:
         objects = block.get('objects') or [block['text']]
         careful = any(word in CAREFUL for name in objects for word in tokens(name))
         return {'index': item, 'text': text, 'score': quality, 'explain': list(dict.fromkeys(explain)),
-                'object': tuple(sorted(objects)), 'careful': careful and (fuzzy or bool(explain))}
+                'object': tuple(sorted(objects)),
+                'careful': careful and (fuzzy or any(line.startswith('неполное') for line in explain))}
 
     def status(self, candidates, issues, incomplete=False, incompatible=False, missing=None, choice=False):
         unique = {}
@@ -559,4 +611,10 @@ def mentions(spans):
 
 
 def explain_typos(alt):
-    return [f'«{typed}» → «{word}»: {edit_kind(typed, word)}' for typed, word in alt.typos]
+    return [describe(*typo) for typo in alt.typos]
+
+
+def describe(typed, word, how):
+    if how == 'form':
+        return f'«{typed}» → «{word}»: другая форма слова'
+    return f'«{typed}» → «{word}»: {edit_kind(typed, word)}'
