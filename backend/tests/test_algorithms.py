@@ -55,11 +55,23 @@ class LevenshteinAlgorithmTests(unittest.TestCase):
 
 class RegistryAndDataTests(unittest.TestCase):
     def test_registry_exposes_configured_algorithm(self):
-        self.assertEqual(public_algorithms(), [{
+        algorithms = public_algorithms()
+        self.assertIn({
             'id': 'levenshtein-combinations',
             'name': 'Левенштейн: комбинации',
             'description': 'Сравнивает запрос со всеми комбинациями «действие + объект» и «объект + действие».',
-        }])
+        }, algorithms)
+        self.assertTrue(all(set(algorithm) == {'id', 'name', 'description'} for algorithm in algorithms))
+        self.assertEqual(len({algorithm['id'] for algorithm in algorithms}), len(algorithms))
+
+    def test_every_configured_algorithm_keeps_contract(self):
+        blocks = [{**command, 'index': position + 1} for position, command in enumerate(DEFAULT_COMMANDS)]
+        identifiers = [algorithm['id'] for algorithm in public_algorithms()]
+        for identifier in identifiers:
+            result = run_algorithms([identifier], 'включи свет на кухне', blocks)[0]['results']
+            self.assertTrue(result, identifier)
+            scores = [item['score'] for item in result]
+            self.assertEqual(scores, sorted(scores, reverse=True), identifier)
 
     def test_registry_runs_and_validates_algorithm(self):
         blocks = [{'index': 1, 'text': 'дальше'}]

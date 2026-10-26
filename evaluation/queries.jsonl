@@ -193,3 +193,10 @@
 {"query": "pfrhjq injhs d cgfkmyt", "expected": ["закрой шторы в спальне"], "type": "layout", "source": "закрой шторы в спальне"}
 {"query": "yfqlb ntktajy", "expected": ["найди телефон"], "type": "layout", "source": "найди телефон"}
 {"query": "gjcnfdm ,elbkmybr", "expected": ["поставь будильник"], "type": "layout", "source": "поставь будильник"}
+{"query": "не включай свет на кухне", "expected": [], "type": "negation", "forbidden": ["включи свет на кухне", "зажги свет на кухне"]}
+{"query": "не выключай музыку", "expected": [], "type": "negation", "forbidden": ["выключи музыку"]}
+{"query": "не открывай дверь", "expected": [], "type": "negation", "forbidden": ["открой дверь"]}
+{"query": "не надо закрывать шторы в спальне", "expected": [], "type": "negation", "forbidden": ["закрой шторы в спальне"]}
+{"query": "только не включай пылесос", "expected": [], "type": "negation", "forbidden": ["включи пылесос"]}
+{"query": "не ставь будильник", "expected": [], "type": "negation", "forbidden": ["поставь будильник"]}
+{"query": "не делай громче", "expected": [], "type": "negation", "forbidden": ["сделай громче"]}

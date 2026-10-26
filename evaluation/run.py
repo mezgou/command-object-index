@@ -42,6 +42,7 @@ TYPES = {
     'noise': 'лишние слова',
     'ambiguous': 'неоднозначное',
     'danger': 'похоже на опасное',
+    'negation': 'отрицание',
     'ood': 'не по теме',
 }
 THRESHOLDS = [round(step / 20, 2) for step in range(21)]
@@ -112,12 +113,15 @@ class Rules:
     def same_effect(self, left, right):
         return self.group_of.get(left, left) == self.group_of.get(right, right)
 
-    def forbidden(self, groups):
-        """Команды, выбор которых для этого запроса — критическая ошибка."""
+    def forbidden(self, groups, extra=()):
+        """Команды, выбор которых для этого запроса — критическая ошибка.
+
+        `extra` — поле `forbidden` из строки набора, например команда, которую просили не выполнять.
+        """
+        bad = set(self.dangerous) | {normalize(text) for text in extra}
         if len(groups) != 1:
-            return set(self.dangerous)
+            return bad
         allowed = set(groups[0])
-        bad = set(self.dangerous)
         for text in allowed:
             bad |= self.opposites.get(text, set())
         return bad - allowed
@@ -143,10 +147,13 @@ def validate(dataset, blocks, rules):
         except ValueError as error:
             problems.append(str(error))
             continue
-        for group in groups:
-            for text in group:
-                if text not in known:
-                    problems.append(f'{where}: команды «{text}» нет в каталоге')
+        forbidden = item.get('forbidden', [])
+        if not isinstance(forbidden, list) or not all(isinstance(text, str) for text in forbidden):
+            problems.append(f'{where}: forbidden должен быть списком строк')
+            forbidden = []
+        for text in [entry for group in groups for entry in group] + [normalize(entry) for entry in forbidden]:
+            if text not in known:
+                problems.append(f'{where}: команды «{text}» нет в каталоге')
     for text in sorted(rules.mentioned - known):
         warnings.append(f'rules.py ссылается на «{text}», которой нет в каталоге')
     return problems, warnings
@@ -200,17 +207,18 @@ def decide(ranking, threshold, margin, rules):
     return top['command']
 
 
-def outcome(groups, chosen, rules):
+def outcome(groups, chosen, rules, extra_forbidden=()):
     if chosen is None:
         return 'false_refusal' if len(groups) == 1 else 'correct_refusal'
     if len(groups) == 1 and chosen in groups[0]:
         return 'correct'
-    return 'critical' if chosen in rules.forbidden(groups) else 'wrong'
+    return 'critical' if chosen in rules.forbidden(groups, extra_forbidden) else 'wrong'
 
 
-def operating_point(groups_list, rankings, threshold, margin, rules):
+def operating_point(groups_list, rankings, threshold, margin, rules, extras=None):
+    extras = extras or [()] * len(groups_list)
     chosen = [decide(ranking, threshold, margin, rules) for ranking in rankings]
-    outcomes = [outcome(groups, pick, rules) for groups, pick in zip(groups_list, chosen)]
+    outcomes = [outcome(groups, pick, rules, extra) for groups, pick, extra in zip(groups_list, chosen, extras)]
     counts = Counter(outcomes)
     return {
         'threshold': threshold,
@@ -222,12 +230,12 @@ def operating_point(groups_list, rankings, threshold, margin, rules):
     }
 
 
-def choose_points(groups_list, rankings, rules):
+def choose_points(groups_list, rankings, rules, extras=None):
     """Лучший порог и зазор по доле верных решений и лучший среди тех, где нет критических ошибок."""
     best = safe = None
     for threshold in THRESHOLDS:
         for margin in MARGINS:
-            point = operating_point(groups_list, rankings, threshold, margin, rules)
+            point = operating_point(groups_list, rankings, threshold, margin, rules, extras)
             if best is None or (point['good'], -point['counts']['critical']) > (best['good'], -best['counts']['critical']):
                 best = point
             if point['counts']['critical'] == 0 and (safe is None or point['good'] > safe['good']):
@@ -248,9 +256,10 @@ def mean(values):
 def evaluate(algorithm, dataset, blocks, rules, fixed=None):
     rankings, latencies, errors = run_algorithm(algorithm, dataset, blocks)
     groups_list = [expected_groups(item) for item in dataset]
+    extras = [tuple(item.get('forbidden', [])) for item in dataset]
     metrics = [ranking_metrics(groups, ranking) for groups, ranking in zip(groups_list, rankings)]
-    best, safe = choose_points(groups_list, rankings, rules)
-    main_point = best if fixed is None else operating_point(groups_list, rankings, fixed[0], fixed[1], rules)
+    best, safe = choose_points(groups_list, rankings, rules, extras)
+    main_point = best if fixed is None else operating_point(groups_list, rankings, fixed[0], fixed[1], rules, extras)
     singles = [metric for metric in metrics if 'rank' in metric]
     clarify = [metric['coverage5'] for metric in metrics if 'coverage5' in metric]
 

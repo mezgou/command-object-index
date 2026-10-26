@@ -13,4 +13,11 @@ ALGORITHMS = [
         'module': 'algo.levenshtein_combinations',
         'function': 'search',
     },
+    {
+        'id': 'levenshtein-normalized',
+        'name': 'Левенштейн + нормализация',
+        'description': 'Те же комбинации, но запрос и формы сначала нормализуются: раскладка, слова-паразиты, числа и время; на «не» — отказ.',
+        'module': 'algo.levenshtein_normalized',
+        'function': 'search',
+    },
 ]
