@@ -59,3 +59,11 @@ docker compose up --build
 ```bash
 python3 -m unittest discover -s backend/tests
 ```
+
+## Оценка алгоритмов
+
+Размеченный набор запросов и скрипт метрик лежат в [evaluation](evaluation). Скрипт прогоняет все алгоритмы из `algo/config.py` и печатает Hit@1, Hit@3, долю верных решений, критические ошибки и задержку:
+
+```bash
+python3 -m evaluation.run
+```
