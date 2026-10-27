@@ -167,7 +167,22 @@ class StructuredAlgorithmTests(unittest.TestCase):
         self.assertEqual(understood('включи свет на кухне быстро')[:2], ('clarify', ['включи свет на кухне']))
         for query in ['включи свет в ванной', 'включи чайник', 'привет включи утюг']:
             decision, _, results = understood(query)
-            self.assertEqual((decision, results[0]['status']), ('reject', 'not_found'), query)
+            self.assertEqual(decision, 'reject', query)
+            self.assertEqual({result['status'] for result in results} or {'not_found'}, {'not_found'}, query)
+
+    def test_unknown_object_gets_hints_instead_of_every_block_with_action(self):
+        results = structured.search('открой форточку', BLOCKS)
+        self.assertTrue(results and len(results) <= 3)
+        self.assertTrue(all(result['explain'][0].startswith('может, вы имели в виду') for result in results))
+        self.assertEqual(structured.search('включи ночник', BLOCKS), [])     # сходство ниже порога — без шума
+
+    def test_states_take_a_target_and_fillers_are_skipped(self):
+        self.assertEqual(understood('сделай музыку громче')[:2], ('accept', ['сделай громче']))
+        self.assertEqual(understood('сделай телевизор в гостиной тише')[:2], ('accept', ['сделай тише']))
+        self.assertEqual(understood('включи музыку тише')[0], 'clarify')
+        self.assertNotEqual(understood('отмена музыку')[0], 'accept')
+        self.assertEqual(understood('выключи свет в спальне и музыку тоже')[:2],
+                         ('accept', ['выключи свет в спальне', 'выключи музыку']))
 
     def test_discontinuous_action_takes_known_object_as_target(self):
         for query in ['поставь музыку на паузу', 'поставь на паузу музыку', 'поставь телевизор в гостиной на паузу']:

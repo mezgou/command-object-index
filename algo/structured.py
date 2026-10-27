@@ -44,7 +44,7 @@ OPERATORS = {
     'all': ['всё', 'весь', 'всю', 'везде'],
     'anaphora': ['его', 'её', 'их', 'это', 'там', 'тут'],
     'prep': ['в', 'во', 'на'],
-    'filler': ['пожалуйста', 'ну', 'давай', 'можешь', 'мне', 'ка', 'а', 'бы', 'сейчас', 'ой'],
+    'filler': ['пожалуйста', 'ну', 'давай', 'можешь', 'мне', 'ка', 'а', 'бы', 'сейчас', 'ой', 'тоже', 'ещё', 'также'],
     'mod': ['через', 'завтра', 'сегодня', 'утром', 'вечером', 'ночью', 'потом', 'позже',
             'секунду', 'секунд', 'минуту', 'минуты', 'минут', 'час', 'часа', 'часов', 'полчаса',
             'один', 'одну', 'два', 'две', 'три', 'пять', 'десять', 'двадцать', 'тридцать',
@@ -174,7 +174,7 @@ class Lexicon:
                 self.operators[tuple(tokens(word)) or (word,)] = kind
         function_words = {word for phrase in self.operators for word in phrase}
         self.phrases = {}          # слова фразы → [(вид, alias, множество блоков)]
-        self.objects = []          # (блок, alias, значимые слова alias, alias начинается с предлога)
+        self.objects = []          # (блок, alias, значимые слова alias, alias — состояние, а не устройство)
         self.by_word = {}          # слово объекта → номера записей self.objects
         self.empty_action = set()  # блоки, где допустима форма без действия
         for block in blocks:
@@ -193,8 +193,12 @@ class Lexicon:
                 if words:
                     for word in set(words):
                         self.by_word.setdefault(word, []).append(len(self.objects))
-                    first = tokens(alias)[0]
-                    self.objects.append((block['index'], alias, words, self.operators.get((first,)) == 'prep'))
+                    # Состояние, а не устройство: «на паузу» (с предлога) или «громче», «тише» — у блока есть
+                    # и действие («сделай»), и форма без него. К такому объекту можно добавить цель:
+                    # «сделай музыку громче». Самостоятельная команда без действий («отмена») — не состояние.
+                    optional = '' in actions and any(actions)
+                    state = self.operators.get((tokens(alias)[0],)) == 'prep' or optional
+                    self.objects.append((block['index'], alias, words, state))
         # Полные наборы слов объектов: по ним узнаём цель разрывного действия («музыку» в «поставь музыку на паузу»).
         self.targets = {}
         for _, alias, words, _ in self.objects:
@@ -453,13 +457,13 @@ class Parser:
                 choices.append(False)
 
         if not found:
+            unknown_object = any(issue.startswith('неизвестный объект') for issue in issues)
             candidates = []
-            for span in actions[:1]:
+            for span in actions[:1] if not unknown_object else []:      # для незнакомого объекта — подсказки TF-IDF
                 for alt in span.alts:
                     for item in sorted(alt.indexes):
                         candidates.append(self.candidate(item, alt.alias, alt.quality * MISSING_ACTION, explain_typos(alt), '',
                                                          alt.distance > 0))
-            unknown_object = any(issue.startswith('неизвестный объект') for issue in issues)
             result.append(self.status(candidates, issues if unknown_object else issues + ['не указан объект']))
             return result
 
