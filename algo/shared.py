@@ -2,16 +2,96 @@
 
 import re
 from collections import defaultdict
+from functools import lru_cache
+
+import pymorphy3
 
 TOKEN = re.compile(r'\w+|,')
+WORD = re.compile(r'\w+', re.UNICODE)
+_MORPH = None
+
+# Видовые пары — отдельные леммы, а не словоформы одного глагола. В контексте
+# команды обе формы обозначают одно действие; перечень намеренно явный.
+ASPECT_PAIRS = {
+    'включать': 'включить', 'выключать': 'выключить',
+    'зажигать': 'зажечь', 'гасить': 'погасить', 'приглушать': 'приглушить',
+    'отключать': 'отключить', 'врубать': 'врубить', 'вырубать': 'вырубить',
+    'открывать': 'открыть', 'закрывать': 'закрыть', 'запирать': 'запереть',
+    'ставить': 'поставить', 'делать': 'сделать', 'устанавливать': 'установить',
+    'отменять': 'отменить', 'искать': 'найти', 'останавливать': 'остановить',
+    'запускать': 'запустить', 'начинать': 'начать',
+}
+_ASPECT_REVERSE = {perfective: imperfective for imperfective, perfective in ASPECT_PAIRS.items()}
 
 
+def normalized_lemma(parse):
+    """Нормальная форма с явным объединением видовых пар только для глаголов."""
+    base = parse.normal_form.replace('ё', 'е')
+    return ASPECT_PAIRS.get(base, base) if parse.tag.POS in ('VERB', 'INFN', 'PRTF', 'PRTS', 'GRND') else base
+
+
+def morph_analyzer():
+    global _MORPH
+    if _MORPH is None:
+        _MORPH = pymorphy3.MorphAnalyzer()
+    return _MORPH
+
+
+@lru_cache(maxsize=50000)
+def lemmas(word):
+    """Словарные леммы; неизвестные слова не исправляем догадками морфологии."""
+    morph = morph_analyzer()
+    if not morph.word_is_known(word):
+        return frozenset()
+    return frozenset(normalized_lemma(parse) for parse in morph.parse(word))
+
+
+@lru_cache(maxsize=50000)
+def lemma(word):
+    """Наиболее вероятная лемма; сравнительную степень и неизвестные слова сохраняем."""
+    morph = morph_analyzer()
+    if not morph.word_is_known(word):
+        return word
+    parsed = morph.parse(word)[0]
+    if parsed.tag.POS in ('NOUN', 'ADJF', 'ADJS', 'VERB', 'INFN', 'PRTF', 'PRTS', 'GRND'):
+        return normalized_lemma(parsed)
+    return word
+
+
+@lru_cache(maxsize=50000)
+def action_forms(word):
+    """Формы глагола для нечёткого поиска опечаток в структурном индексе."""
+    morph = morph_analyzer()
+    if not morph.word_is_known(word):
+        return ()
+    parsed = morph.parse(word)[0]
+    if parsed.tag.POS not in ('VERB', 'INFN'):
+        return ()
+    base = normalized_lemma(parsed)
+    related = [base, _ASPECT_REVERSE.get(base)]
+    forms = set()
+    for infinitive in related:
+        if infinitive and morph.word_is_known(infinitive):
+            forms.add(infinitive)
+            forms.update(form.word.replace('ё', 'е') for form in morph.parse(infinitive)[0].lexeme
+                         if form.tag.POS == 'VERB' and ('impr' in form.tag or '2per' in form.tag))
+    return tuple(sorted(forms))
+
+
+@lru_cache(maxsize=50000)
 def normalize(text):
-    return ' '.join(text.lower().split())
+    """Нормализация для сравнения: регистр, пробелы, ё и словарные леммы."""
+    text = ' '.join(text.lower().replace('ё', 'е').split())
+    return WORD.sub(lambda match: lemma(match.group()), text)
 
 
 def levenshtein(left, right):
-    left, right = normalize(left), normalize(right)
+    """Расстояние между исходными строками с общей нормализацией."""
+    return levenshtein_normalized(normalize(left), normalize(right))
+
+
+def levenshtein_normalized(left, right):
+    """Расстояние между уже нормализованными строками."""
     if len(left) < len(right):
         left, right = right, left
     previous = list(range(len(right) + 1))
@@ -29,6 +109,11 @@ def levenshtein(left, right):
 
 def candidate_forms(block):
     """Строит уникальные текстовые формы, которые описывает смысловой блок."""
+    return [form for form, _ in normalized_candidate_forms(block)]
+
+
+def normalized_candidate_forms(block):
+    """Возвращает пары исходной и нормализованной формы без повторной нормализации."""
     forms = [block['text']]
     actions = block.get('actions', [])
     objects = block.get('objects', [])
@@ -49,7 +134,7 @@ def candidate_forms(block):
         normalized = normalize(form)
         if normalized and normalized not in seen:
             seen.add(normalized)
-            unique_forms.append(form)
+            unique_forms.append((form, normalized))
     return unique_forms
 
 

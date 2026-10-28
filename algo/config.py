@@ -27,11 +27,4 @@ ALGORITHMS = [
         'module': 'algo.structured',
         'function': 'search',
     },
-    {
-        'id': 'structured-morph',
-        'name': 'Структурный индекс + леммы',
-        'description': 'То же плюс словоформы через pymorphy3: «включите», «лампы», «музыка» без перечисления в блоках.',
-        'module': 'algo.structured',
-        'function': 'search_morph',
-    },
 ]

@@ -1,12 +1,13 @@
 import os
 import sys
 import unittest
+from unittest.mock import patch
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, 'backend', 'app'))
 
-from algo import structured, tfidf_char
+from algo import levenshtein_combinations, structured, tfidf_char
 from algo.levenshtein_combinations import search
 from algo.registry import public_algorithms, run_algorithms, validate_results
 from algo.shared import DeletionIndex, candidate_forms, levenshtein, max_edits, normalize, osa, tokens
@@ -28,7 +29,12 @@ def understood(query, blocks=BLOCKS):
 
 class SharedTests(unittest.TestCase):
     def test_normalization_and_distance(self):
-        self.assertEqual(normalize('  ВКЛЮЧИ \t  свет  '), 'включи свет')
+        self.assertEqual(normalize('  ВКЛЮЧИ \t  свет  '), 'включить свет')
+        self.assertEqual(normalize('включите лампы'), 'включить лампа')
+        self.assertEqual(normalize('включай лампы'), 'включить лампа')
+        self.assertEqual(normalize('выключай лампы'), 'выключить лампа')
+        self.assertEqual(normalize('врубай музыку'), 'врубить музыка')
+        self.assertNotEqual(normalize('дальше'), normalize('далеко'))
         self.assertEqual(levenshtein('кот', 'кит'), 1)
         self.assertEqual(levenshtein('', 'свет'), 4)
 
@@ -83,8 +89,49 @@ class LevenshteinAlgorithmTests(unittest.TestCase):
         ]
         self.assertEqual([item['index'] for item in search('включи свет', blocks)], [1, 2])
 
+    def test_query_is_normalized_once_with_prepared_catalog(self):
+        levenshtein_combinations._CACHE.clear()
+        search('зажги свет', [self.block])
+        with patch.object(levenshtein_combinations, 'normalize', wraps=normalize) as normalize_call:
+            search('включите кухонный свет', [self.block])
+        normalize_call.assert_called_once_with('включите кухонный свет')
+
+    def test_catalog_edit_rebuilds_prepared_forms(self):
+        block = {'index': 1, 'text': 'включи свет', 'actions': ['включить'], 'objects': ['свет']}
+        self.assertLess(search('зажги свет', [block])[0]['score'], 1)
+        block['actions'].append('зажечь')
+        self.assertEqual(search('зажги свет', [block])[0]['score'], 1)
+
 
 class RegistryAndDataTests(unittest.TestCase):
+    def test_action_synonyms_are_scoped_to_each_object(self):
+        light = next(block for block in BLOCKS if block['text'] == 'включи свет на кухне')
+        conditioner = next(block for block in BLOCKS if block['text'] == 'включи кондиционер')
+        self.assertEqual(light['actions'], ['включить', 'зажечь'])
+        self.assertEqual(conditioner['actions'], ['включить'])
+        self.assertEqual(understood('зажгите свет на кухне')[:2], ('accept', ['включи свет на кухне']))
+        self.assertNotEqual(understood('зажги кондиционер')[0], 'accept')
+        for method in (search, tfidf_char.search):
+            self.assertEqual(method('зажгите свет на кухне', BLOCKS)[0]['index'], light['index'])
+
+    def test_aspect_pairs_work_without_broadening_object_permissions(self):
+        self.assertEqual(understood('включай свет на кухне')[:2], ('accept', ['включи свет на кухне']))
+        self.assertEqual(understood('врубай музыку')[:2], ('accept', ['включи музыку']))
+        self.assertNotEqual(understood('зажигай кондиционер')[0], 'accept')
+        for method in (search, tfidf_char.search):
+            self.assertEqual(TEXT[method('включай свет на кухне', BLOCKS)[0]['index']], 'включи свет на кухне')
+            self.assertEqual(TEXT[method('врубай музыку', BLOCKS)[0]['index']], 'включи музыку')
+
+    def test_editing_action_synonyms_changes_only_that_block(self):
+        blocks = [
+            {'index': 1, 'text': 'включи свет', 'actions': ['включить', 'зажечь'], 'objects': ['свет']},
+            {'index': 2, 'text': 'включи кондиционер', 'actions': ['включить'], 'objects': ['кондиционер']},
+        ]
+        self.assertEqual(structured.search('зажгите свет', blocks)[0]['decision'], 'accept')
+        self.assertNotEqual(structured.search('зажгите кондиционер', blocks)[0]['decision'], 'accept')
+        edited = [{**block, 'actions': ['включить']} for block in blocks]
+        self.assertNotEqual(structured.search('зажгите свет', edited)[0]['decision'], 'accept')
+
     def test_registry_exposes_configured_algorithm(self):
         self.assertEqual(public_algorithms()[0], {
             'id': 'levenshtein-combinations',
@@ -92,7 +139,7 @@ class RegistryAndDataTests(unittest.TestCase):
             'description': 'Сравнивает запрос со всеми комбинациями «действие + объект» и «объект + действие».',
         })
         self.assertEqual([algorithm['id'] for algorithm in public_algorithms()],
-                         ['levenshtein-combinations', 'tfidf-char', 'structured', 'structured-morph'])
+                         ['levenshtein-combinations', 'tfidf-char', 'structured'])
 
     def test_optional_fields_are_validated_and_passed_through(self):
         result = {'index': 1, 'text': 'дальше', 'score': 1, 'decision': 'accept', 'status': 'resolved',
@@ -204,12 +251,11 @@ class StructuredAlgorithmTests(unittest.TestCase):
         self.assertTrue(results[0]['explain'][0].startswith('может, вы имели в виду'))
         self.assertEqual(structured.search('свари кофе', BLOCKS), [])
 
-    def test_action_synonyms_work_for_every_block_without_duplicates(self):
+    def test_catalog_action_synonyms_work_without_duplicates(self):
         for query, expected in [('зажги свет в гостиной', 'включи свет в гостиной'), ('погаси свет на кухне', 'выключи свет на кухне'),
                                 ('вруби телевизор в спальне', 'включи телевизор в спальне')]:
-            decision, chosen, results = understood(query)
+            decision, chosen, _ = understood(query)
             self.assertEqual((decision, chosen), ('accept', [expected]), query)
-            self.assertTrue(any('то же действие' in line for line in results[0]['explain']), query)
         self.assertEqual(understood('включи и зажги свет на кухне')[0], 'accept')      # синонимы — не противоречие
         self.assertEqual(understood('открой и закрой шторы в спальне')[0], 'clarify')  # антонимы — противоречие
 
@@ -217,8 +263,13 @@ class StructuredAlgorithmTests(unittest.TestCase):
         decision, _, results = understood('выключть свет на кухне')     # 1 правка до «выключить», 2 — до «включить»
         self.assertEqual(decision, 'clarify')
         self.assertTrue(any(line.startswith('опечатка между противоположными') for line in results[0]['explain']))
-        if structured.pymorphy3:                                          # настоящее слово «выключит» — не опечатка
-            self.assertEqual(structured.search_morph('выключит свет на кухне', BLOCKS)[0]['decision'], 'accept')
+        # Настоящее слово «выключит» — не опечатка.
+        self.assertEqual(structured.search('выключит свет на кухне', BLOCKS)[0]['decision'], 'accept')
+
+    def test_antonym_is_not_hidden_by_many_forms_of_one_verb(self):
+        result = structured.search('включаите свет на кухне', BLOCKS)[0]
+        self.assertNotEqual(result['decision'], 'accept')
+        self.assertTrue(any('противоположными' in line for line in result['explain']))
 
     def test_new_alias_changes_results_without_touching_other_blocks(self):
         blocks = [dict(block) for block in BLOCKS]
@@ -229,20 +280,20 @@ class StructuredAlgorithmTests(unittest.TestCase):
         self.assertEqual(understood('выключи свет в спальне', blocks)[:2], ('accept', ['выключи свет в спальне']))
 
 
-@unittest.skipUnless(structured.pymorphy3, 'нужен pymorphy3: pip install -r backend/requirements.txt')
-class StructuredMorphTests(unittest.TestCase):
+class StructuredLemmatizationTests(unittest.TestCase):
     def test_word_forms_match_by_lemma(self):
         for query, expected in [('откройте шторы в гостиной', 'открой шторы в гостиной'), ('погасите люстру', 'выключи свет в гостиной'),
                                 ('включи лампы на кухне', 'включи свет на кухне'), ('музыка выключи', 'выключи музыку')]:
-            results = structured.search_morph(query, BLOCKS)
+            results = structured.search(query, BLOCKS)
             self.assertEqual((results[0]['decision'], TEXT[results[0]['index']], results[0]['score']), ('accept', expected, 1.0), query)
-        self.assertIn('«найдите» → «найди»: другая форма слова', structured.search_morph('найдите телефон', BLOCKS)[0]['explain'])
+        # Словоформа может совпасть с подготовленной формой действия напрямую.
+        self.assertEqual(structured.search('найдите телефон', BLOCKS)[0]['decision'], 'accept')
 
     def test_lemmas_do_not_bypass_typo_safety(self):
         self.assertEqual(structured.lemmas('выключа'), frozenset())
         for query in ['ыключи свет на кухне', 'откой дверь']:
-            self.assertEqual(structured.search_morph(query, BLOCKS)[0]['decision'], 'clarify', query)
-        self.assertEqual({result['decision'] for result in structured.search_morph('далеко', BLOCKS)}, {'reject'})
+            self.assertEqual(structured.search(query, BLOCKS)[0]['decision'], 'clarify', query)
+        self.assertEqual({result['decision'] for result in structured.search('далеко', BLOCKS)}, {'reject'})
 
 
 class TfidfAlgorithmTests(unittest.TestCase):
@@ -257,16 +308,14 @@ class TfidfAlgorithmTests(unittest.TestCase):
 class MetamorphicTests(unittest.TestCase):
     """Свойства для всех фраз датасета: перестановка каталога, вежливость, «не», опечатка-антоним."""
 
-    def test_structured_methods_keep_all_relations(self):
+    def test_structured_keeps_all_relations(self):
         sys.path.insert(0, os.path.join(ROOT, 'evaluation'))
         import metamorphic
         blocks = metamorphic.load_blocks()
         checks = metamorphic.cases(metamorphic.load_dataset(metamorphic.DATASET, blocks), blocks)
         self.assertGreater(len(checks), 1000)
-        ids = ['structured'] + (['structured-morph'] if structured.pymorphy3 else [])
-        for identifier in ids:
-            _, violations = metamorphic.check(metamorphic.configured_algorithms()[identifier], checks, blocks, 0.8)
-            self.assertEqual(violations[:3], [], identifier)
+        _, violations = metamorphic.check(metamorphic.configured_algorithms()['structured'], checks, blocks, 0.8)
+        self.assertEqual(violations[:3], [])
 
 
 class EvaluationTests(unittest.TestCase):

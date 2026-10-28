@@ -24,16 +24,10 @@
 """
 
 import json
-from functools import lru_cache
 from itertools import product
 
 from algo import tfidf_char
-from algo.shared import DeletionIndex, edit_kind, osa, tokens
-
-try:
-    import pymorphy3
-except ImportError:           # метод structured-morph без библиотеки недоступен, structured работает
-    pymorphy3 = None
+from algo.shared import DeletionIndex, action_forms, edit_kind, lemmas, osa, tokens
 
 OPERATORS = {
     'and': ['и', 'а также', ','],
@@ -51,8 +45,8 @@ OPERATORS = {
             'один', 'одну', 'два', 'две', 'три', 'пять', 'десять', 'двадцать', 'тридцать',
             'процентов', 'градусов', 'наполовину'],
 }
-# Языковые связи — знание о русском языке, а не о конкретной квартире, поэтому живут здесь, а не в блоках.
-# Одна группа — синонимы: «зажги» ведёт к блокам с «включи», даже если в каталоге «зажги» нет.
+# Группы нужны для выявления противоположностей и совместимых действий.
+# Какие действия допустимы для объекта, задаётся только в actions его блока.
 # Пары OPPOSITE — антонимы (confusion set): если слово запроса похоже на членов обеих групп,
 # выбор никогда не уверенный, даже если одно из расстояний меньше.
 GROUPS = {
@@ -82,17 +76,16 @@ HINTS = 3                 # подсказок TF-IDF, если структур
 HINT_MIN = 0.5            # ниже этой близости TF-IDF подсказка — шум («свари кофе» → 0.36)
 STATUS_ORDER = ['negated', 'unsupported', 'not_found', 'incompatible', 'incomplete', 'ambiguous', 'resolved']
 _CACHE = {}
-_MORPH = []
 
 
-def search(query, blocks, morph=False):
+def search(query, blocks):
     """Возвращает ранжированные блоки по контракту платформы и разбор запроса.
 
     Результаты идут по командам запроса: сначала кандидаты первой команды,
     потом второй. Поле `command` — номер команды, `status` — её статус,
     `decision` — решение по всему запросу, `explain` — почему блок здесь.
     """
-    analysis = analyze(query, blocks, morph)
+    analysis = analyze(query, blocks)
     commands = analysis['commands'] or [{'status': 'not_found', 'candidates': [], 'issues': [], 'source': query}]
     results = []
     for number, command in enumerate(commands, 1):
@@ -120,35 +113,9 @@ def hints(text, blocks):
     return [{**result, 'explain': ['может, вы имели в виду… (похожая формулировка, TF-IDF)']} for result in found]
 
 
-def search_morph(query, blocks):
-    """То же, что `search`, но слова сравниваются ещё и по лемме (pymorphy3).
-
-    «включите», «погасите», «лампы», «музыка» совпадают с «включи», «погаси»,
-    «лампу», «музыку» из каталога без перечисления всех форм в блоках.
-    """
-    if pymorphy3 is None:
-        raise ValueError('Для метода structured-morph нужен pymorphy3: pip install -r backend/requirements.txt')
-    return search(query, blocks, morph=True)
-
-
-@lru_cache(maxsize=50000)
-def lemmas(word):
-    """Начальные формы слова по словарю OpenCorpora; для незнакомых словарю слов — ничего.
-
-    Догадкам pymorphy о незнакомых словах не верим: опечатка «выключа» иначе
-    получила бы лемму и обошла проверку ничьей «включи / выключи».
-    """
-    if not _MORPH:
-        _MORPH.append(pymorphy3.MorphAnalyzer())
-    morph = _MORPH[0]
-    if not morph.word_is_known(word):
-        return frozenset()
-    return frozenset(parse.normal_form.replace('ё', 'е') for parse in morph.parse(word))
-
-
-def analyze(query, blocks, morph=False):
+def analyze(query, blocks):
     """Полный разбор: решение, команды с кандидатами и пояснения."""
-    index = lexicon_for(blocks, morph)
+    index = lexicon_for(blocks)
     readings = []
     paths = index.segment(tokens(query))
     for items in paths:
@@ -173,20 +140,20 @@ def decide(commands, close_readings, conflict):
     return 'clarify'
 
 
-def lexicon_for(blocks, morph=False):
+def lexicon_for(blocks):
     """Индекс строится один раз на содержимое каталога: правка блока меняет ключ."""
-    key = (morph, json.dumps(blocks, ensure_ascii=False, sort_keys=True))
+    key = json.dumps(blocks, ensure_ascii=False, sort_keys=True)
     if key not in _CACHE:
         if len(_CACHE) >= 4:
             _CACHE.pop(next(iter(_CACHE)))
-        _CACHE[key] = Lexicon(blocks, morph)
+        _CACHE[key] = Lexicon(blocks)
     return _CACHE[key]
 
 
 class Lexicon:
     """Словарь блоков: фразы действий и спецкоманд, слова объектов, служебные слова."""
 
-    def __init__(self, blocks, morph=False):
+    def __init__(self, blocks):
         self.blocks = {block['index']: block for block in blocks}
         self.operators = {}
         for kind, words in OPERATORS.items():
@@ -204,6 +171,9 @@ class Lexicon:
             for action in actions:
                 if action:
                     self.add_phrase('action', action, block['index'])
+                    if len(tokens(action)) == 1:
+                        for form in action_forms(action):
+                            self.add_phrase('action', form, block['index'])
                 else:
                     self.empty_action.add(block['index'])
             if objects and not actions:
@@ -219,17 +189,18 @@ class Lexicon:
                     optional = '' in actions and any(actions)
                     state = self.operators.get((tokens(alias)[0],)) == 'prep' or optional
                     self.objects.append((block['index'], alias, words, state))
-        # Синонимы действий: группа → все блоки, где встречается любое её слово-действие. Слова группы,
-        # которых нет в блоках, добавляются как действия без своих блоков — только через синонимию.
+        # Формы группы нужны для распознавания антонимов, но не предоставляют
+        # разрешения на действие: оно задаётся явно в actions конкретного блока.
         self.group_of = {tokens(word)[0]: group for group, words in GROUPS.items() for word in words}
-        self.group_blocks = {}
-        for phrase, entries in self.phrases.items():
-            group = self.group_of.get(phrase[0]) if len(phrase) == 1 else None
-            for kind, _, indexes in entries:
-                if group and kind == 'action':
-                    self.group_blocks.setdefault(group, set()).update(indexes)
         for group, words in GROUPS.items():
-            if group in self.group_blocks:
+            for word in words:
+                for form in action_forms(word):
+                    self.group_of.setdefault(form, group)
+        active_groups = {self.group_of[phrase[0]] for phrase, entries in self.phrases.items()
+                         if len(phrase) == 1 and phrase[0] in self.group_of
+                         and any(kind == 'action' for kind, _, _ in entries)}
+        for group, words in GROUPS.items():
+            if group in active_groups:
                 for word in words:
                     phrase = tuple(tokens(word))
                     if not any(entry[0] == 'action' for entry in self.phrases.get(phrase, [])):
@@ -245,18 +216,16 @@ class Lexicon:
         # Лемма → слова каталога. Только действия и объекты: у спецкоманд леммы
         # опасны («далеко» и «дальше» — обе формы слова «далёкий»).
         self.by_lemma = {}
-        if morph:
-            words = {word for phrase, entries in self.phrases.items() for word in phrase
-                     if any(entry[0] == 'action' for entry in entries)} | set(self.by_word)
-            for word in words - function_words:
-                for lemma in lemmas(word):
-                    self.by_lemma.setdefault(lemma, set()).add(word)
+        words = {word for phrase, entries in self.phrases.items() for word in phrase
+                 if any(entry[0] == 'action' for entry in entries)} | set(self.by_word)
+        for word in words - function_words:
+            for lemma in lemmas(word):
+                self.by_lemma.setdefault(lemma, set()).add(word)
 
-    def synonyms(self, alias, own):
-        """Блоки, куда ведёт действие через синонимию, кроме своих, и группа действия."""
+    def action_group(self, alias):
+        """Группа для анализа конфликта; допустимость берётся из самого блока."""
         words = tokens(alias)
-        group = self.group_of.get(words[0]) if len(words) == 1 else None
-        return self.group_blocks.get(group, set()) - own, group
+        return self.group_of.get(words[0]) if len(words) == 1 else None
 
     def confusions(self, spans):
         """Пары антонимов, между которыми колеблется хотя бы одно слово запроса."""
@@ -265,6 +234,11 @@ class Lexicon:
             groups = {}
             for alt in span.alts:
                 groups.setdefault(self.group_of.get(alt.alias), alt.alias)
+            # Ограничение числа кандидатов сегментации не должно скрыть
+            # антоним: проверяем все нечёткие совпадения слова отдельно.
+            if len(tokens(span.text)) == 1 and span.alts and all(alt.distance > 0 for alt in span.alts):
+                for word, _ in self.fuzzy.lookup(tokens(span.text)[0]):
+                    groups.setdefault(self.group_of.get(word), word)
             for left, right in OPPOSITE:
                 if left in groups and right in groups:
                     found.append(f'опечатка между противоположными: «{groups[left]}» / «{groups[right]}»')
@@ -528,10 +502,10 @@ class Parser:
             candidates = []
             for span in actions[:1] if not unknown_object else []:      # для незнакомого объекта — подсказки TF-IDF
                 for alt in span.alts:
-                    synonyms, group = index.synonyms(alt.alias, alt.indexes)
-                    for item in sorted(alt.indexes | synonyms):
+                    group = index.action_group(alt.alias)
+                    for item in sorted(alt.indexes):
                         candidates.append(self.candidate(item, alt.alias, alt.quality * MISSING_ACTION, explain_typos(alt), '',
-                                                         alt.distance > 0, group, item in synonyms))
+                                                         alt.distance > 0, group))
             result.append(self.status(candidates, issues if unknown_object else issues + ['не указан объект']))
             return result
 
@@ -550,11 +524,10 @@ class Parser:
                 for span in actions:
                     for alt in span.alts:
                         typo = fuzzy or alt.distance > 0
-                        synonyms, group = index.synonyms(alt.alias, alt.indexes)
-                        if item in alt.indexes or item in synonyms:
-                            note = [] if item in alt.indexes else                                 [f'«{alt.alias}» — то же действие, что «{index.blocks[item]["text"].split()[0]}»']
+                        group = index.action_group(alt.alias)
+                        if item in alt.indexes:
                             candidates.append(self.candidate(item, alt.alias, alt.quality * quality,
-                                                             explain_typos(alt) + explain + note, alias, typo, group, bool(note)))
+                                                             explain_typos(alt) + explain, alias, typo, group))
                         else:
                             others.append(self.candidate(item, alt.alias, alt.quality * quality * MISSING_ACTION,
                                                          explain_typos(alt) + explain, alias, typo, group))
@@ -611,21 +584,16 @@ class Parser:
                 return alias, [typo for hit in hits for typo in min(hit, key=lambda alt: alt.distance).typos]
         return None
 
-    def candidate(self, item, action, quality, explain, alias, fuzzy=False, group=None, via_synonym=False):
+    def candidate(self, item, action, quality, explain, alias, fuzzy=False, group=None):
         block = self.index.blocks[item]
         text = ' '.join(part for part in (action, alias) if part) or block['text']
         objects = block.get('objects') or [block['text']]
         careful = any(word in CAREFUL for name in objects for word in tokens(name))
         return {'index': item, 'text': text, 'score': quality, 'explain': list(dict.fromkeys(explain)),
-                'object': tuple(sorted(objects)), 'group': group, 'via_synonym': via_synonym,
+                'object': tuple(sorted(objects)), 'group': group,
                 'careful': careful and (fuzzy or any(line.startswith('неполное') for line in explain))}
 
     def status(self, candidates, issues, incomplete=False, incompatible=False, missing=None, choice=False):
-        # Блок со «своим» действием важнее блока-дубля, найденного через синоним («зажги свет на кухне»
-        # и «включи свет на кухне» с тем же объектом) — иначе синонимия создаёт ложную ничью.
-        direct = {(candidate['object'], candidate['group']) for candidate in candidates if not candidate['via_synonym']}
-        candidates = [candidate for candidate in candidates
-                      if not (candidate['via_synonym'] and (candidate['object'], candidate['group']) in direct)]
         unique = {}
         order = lambda candidate: (-candidate['score'], self.index.blocks[candidate['index']]['text'])   # ничья — по тексту, не по номеру
         for candidate in sorted(candidates, key=order):

@@ -76,8 +76,8 @@ def evaluate(algorithm, dataset, blocks, threshold):
     by_index = {block['index']: block['text'] for block in blocks}
     valid = set(by_index)
     rows, latencies = [], []
+    search('', blocks)                       # подготовить каталог, не прогревая запросы датасета
     for item in dataset:
-        search(item['query'], blocks)            # прогрев кэшей
         started = time.perf_counter()
         results = validate_results(search(item['query'], blocks), valid)
         latencies.append((time.perf_counter() - started) * 1000)
@@ -163,7 +163,7 @@ def main():
     for identifier in list(ids):
         try:
             summary, rows = evaluate(configured[identifier], dataset, blocks, args.threshold)
-        except ValueError as error:          # например, нет pymorphy3 для structured-morph
+        except ValueError as error:
             print(f'{identifier:<28}пропущен: {error}')
             ids.remove(identifier)
             continue

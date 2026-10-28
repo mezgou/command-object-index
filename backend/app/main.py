@@ -6,8 +6,12 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 from algo.registry import public_algorithms, run_algorithms
-from algo.shared import normalize
 from catalog import DEFAULT_COMMANDS
+
+
+def normalize(text):
+    """Сравнение записей каталога без объединения разных словоформ."""
+    return ' '.join(text.lower().split())
 
 DATA_PATH = os.environ.get('DATA_PATH', '/data/commands.json')
 LOCK = threading.Lock()

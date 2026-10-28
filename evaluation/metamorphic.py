@@ -48,7 +48,7 @@ SEED = 20261028
 
 
 def outcome(search, query, blocks, threshold):
-    """Что алгоритм делает с запросом: уверен ли и какие блоки (по тексту) выбрал."""
+    """Решение, уверенность и выбранные блоки; пустой список не содержит решения."""
     results = validate_results(search(query, blocks), {block['index'] for block in blocks})
     text = {block['index']: block['text'] for block in blocks}
     if results and 'command' in results[0]:
@@ -58,7 +58,8 @@ def outcome(search, query, blocks, threshold):
         chosen = [chosen[number] for number in sorted(chosen)]
     else:
         chosen = [text[results[0]['index']]] if results else []
-    return is_confident(results, threshold), chosen
+    decision = results[0].get('decision') if results else None
+    return decision, is_confident(results, threshold), chosen
 
 
 def reindex(commands):
@@ -135,9 +136,9 @@ def check(algorithm, checks, blocks, threshold):
         totals[relation] = totals.get(relation, 0) + 1
         if query not in base:
             base[query] = outcome(search, query, blocks, threshold)
-        confident, chosen = outcome(search, changed, catalog, threshold)
-        if expect == 'same' and (confident, chosen) != base[query]:
-            violations.append((relation, query, changed, f'{base[query]} → {(confident, chosen)}'))
+        decision, confident, chosen = outcome(search, changed, catalog, threshold)
+        if expect == 'same' and (decision, confident, chosen) != base[query]:
+            violations.append((relation, query, changed, f'{base[query]} → {(decision, confident, chosen)}'))
         if expect == 'not_accept' and confident:
             violations.append((relation, query, changed, f'уверенно: {chosen}'))
     return totals, violations
