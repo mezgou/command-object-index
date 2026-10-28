@@ -204,6 +204,22 @@ class StructuredAlgorithmTests(unittest.TestCase):
         self.assertTrue(results[0]['explain'][0].startswith('может, вы имели в виду'))
         self.assertEqual(structured.search('свари кофе', BLOCKS), [])
 
+    def test_action_synonyms_work_for_every_block_without_duplicates(self):
+        for query, expected in [('зажги свет в гостиной', 'включи свет в гостиной'), ('погаси свет на кухне', 'выключи свет на кухне'),
+                                ('вруби телевизор в спальне', 'включи телевизор в спальне')]:
+            decision, chosen, results = understood(query)
+            self.assertEqual((decision, chosen), ('accept', [expected]), query)
+            self.assertTrue(any('то же действие' in line for line in results[0]['explain']), query)
+        self.assertEqual(understood('включи и зажги свет на кухне')[0], 'accept')      # синонимы — не противоречие
+        self.assertEqual(understood('открой и закрой шторы в спальне')[0], 'clarify')  # антонимы — противоречие
+
+    def test_any_doubt_between_antonyms_asks_for_clarification(self):
+        decision, _, results = understood('выключть свет на кухне')     # 1 правка до «выключить», 2 — до «включить»
+        self.assertEqual(decision, 'clarify')
+        self.assertTrue(any(line.startswith('опечатка между противоположными') for line in results[0]['explain']))
+        if structured.pymorphy3:                                          # настоящее слово «выключит» — не опечатка
+            self.assertEqual(structured.search_morph('выключит свет на кухне', BLOCKS)[0]['decision'], 'accept')
+
     def test_new_alias_changes_results_without_touching_other_blocks(self):
         blocks = [dict(block) for block in BLOCKS]
         self.assertEqual(understood('включи торшер', blocks)[0], 'reject')
@@ -220,7 +236,7 @@ class StructuredMorphTests(unittest.TestCase):
                                 ('включи лампы на кухне', 'включи свет на кухне'), ('музыка выключи', 'выключи музыку')]:
             results = structured.search_morph(query, BLOCKS)
             self.assertEqual((results[0]['decision'], TEXT[results[0]['index']], results[0]['score']), ('accept', expected, 1.0), query)
-        self.assertIn('«откройте» → «открой»: другая форма слова', structured.search_morph('откройте шторы в гостиной', BLOCKS)[0]['explain'])
+        self.assertIn('«найдите» → «найди»: другая форма слова', structured.search_morph('найдите телефон', BLOCKS)[0]['explain'])
 
     def test_lemmas_do_not_bypass_typo_safety(self):
         self.assertEqual(structured.lemmas('выключа'), frozenset())
@@ -236,6 +252,21 @@ class TfidfAlgorithmTests(unittest.TestCase):
         self.assertEqual(TEXT[results[0]['index']], 'включи свет на кухне')
         self.assertTrue(all(0 <= result['score'] <= 1 for result in results))
         self.assertEqual(validate_results(results, set(TEXT)), results)
+
+
+class MetamorphicTests(unittest.TestCase):
+    """Свойства для всех фраз датасета: перестановка каталога, вежливость, «не», опечатка-антоним."""
+
+    def test_structured_methods_keep_all_relations(self):
+        sys.path.insert(0, os.path.join(ROOT, 'evaluation'))
+        import metamorphic
+        blocks = metamorphic.load_blocks()
+        checks = metamorphic.cases(metamorphic.load_dataset(metamorphic.DATASET, blocks), blocks)
+        self.assertGreater(len(checks), 1000)
+        ids = ['structured'] + (['structured-morph'] if structured.pymorphy3 else [])
+        for identifier in ids:
+            _, violations = metamorphic.check(metamorphic.configured_algorithms()[identifier], checks, blocks, 0.8)
+            self.assertEqual(violations[:3], [], identifier)
 
 
 class EvaluationTests(unittest.TestCase):

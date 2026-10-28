@@ -45,11 +45,31 @@ OPERATORS = {
     'anaphora': ['его', 'её', 'их', 'это', 'там', 'тут'],
     'prep': ['в', 'во', 'на'],
     'filler': ['пожалуйста', 'ну', 'давай', 'можешь', 'мне', 'ка', 'а', 'бы', 'сейчас', 'ой', 'тоже', 'ещё', 'также'],
+    'address': ['привет', 'слушай', 'алиса', 'эй', 'короче', 'окей', 'здравствуй', 'хей'],
     'mod': ['через', 'завтра', 'сегодня', 'утром', 'вечером', 'ночью', 'потом', 'позже',
             'секунду', 'секунд', 'минуту', 'минуты', 'минут', 'час', 'часа', 'часов', 'полчаса',
             'один', 'одну', 'два', 'две', 'три', 'пять', 'десять', 'двадцать', 'тридцать',
             'процентов', 'градусов', 'наполовину'],
 }
+# Языковые связи — знание о русском языке, а не о конкретной квартире, поэтому живут здесь, а не в блоках.
+# Одна группа — синонимы: «зажги» ведёт к блокам с «включи», даже если в каталоге «зажги» нет.
+# Пары OPPOSITE — антонимы (confusion set): если слово запроса похоже на членов обеих групп,
+# выбор никогда не уверенный, даже если одно из расстояний меньше.
+GROUPS = {
+    'turn_on': ['включить', 'включи', 'включай', 'включите', 'включишь', 'зажечь', 'зажги', 'зажгите', 'зажжёшь',
+                'вруби', 'врубить', 'врубай', 'активируй', 'активировать'],
+    'turn_off': ['выключить', 'выключи', 'выключай', 'выключите', 'выключишь', 'отключи', 'отключить', 'отключите',
+                 'погаси', 'погасить', 'погасите', 'выруби', 'вырубить', 'вырубай'],
+    'open': ['открыть', 'открой', 'откройте', 'откроешь', 'открывай', 'распахни'],
+    'close': ['закрыть', 'закрой', 'закройте', 'закроешь', 'закрывай', 'запри', 'запереть', 'прикрой'],
+    'start': ['запустить', 'запусти', 'запустите', 'начни', 'начать'],
+    'stop': ['остановить', 'останови', 'остановите', 'остановишь'],
+    'louder': ['громче', 'погромче', 'громко'],
+    'quieter': ['тише', 'потише', 'тихо'],
+    'warmer': ['теплее', 'потеплее', 'тепло'],
+    'colder': ['холоднее', 'похолоднее', 'прохладно'],
+}
+OPPOSITE = [('turn_on', 'turn_off'), ('open', 'close'), ('start', 'stop'), ('louder', 'quieter'), ('warmer', 'colder')]
 # Объекты, для которых опечатка никогда не даёт уверенного выбора: ошибка здесь
 # дороже переспроса. В схеме блока нет поля риска, поэтому список — часть политики.
 CAREFUL = {'дверь', 'двери', 'замок', 'холодильник', 'плиту', 'газ', 'сигнализацию'}
@@ -199,6 +219,21 @@ class Lexicon:
                     optional = '' in actions and any(actions)
                     state = self.operators.get((tokens(alias)[0],)) == 'prep' or optional
                     self.objects.append((block['index'], alias, words, state))
+        # Синонимы действий: группа → все блоки, где встречается любое её слово-действие. Слова группы,
+        # которых нет в блоках, добавляются как действия без своих блоков — только через синонимию.
+        self.group_of = {tokens(word)[0]: group for group, words in GROUPS.items() for word in words}
+        self.group_blocks = {}
+        for phrase, entries in self.phrases.items():
+            group = self.group_of.get(phrase[0]) if len(phrase) == 1 else None
+            for kind, _, indexes in entries:
+                if group and kind == 'action':
+                    self.group_blocks.setdefault(group, set()).update(indexes)
+        for group, words in GROUPS.items():
+            if group in self.group_blocks:
+                for word in words:
+                    phrase = tuple(tokens(word))
+                    if not any(entry[0] == 'action' for entry in self.phrases.get(phrase, [])):
+                        self.phrases.setdefault(phrase, []).append(('action', word, set()))
         # Полные наборы слов объектов: по ним узнаём цель разрывного действия («музыку» в «поставь музыку на паузу»).
         self.targets = {}
         for _, alias, words, _ in self.objects:
@@ -216,6 +251,24 @@ class Lexicon:
             for word in words - function_words:
                 for lemma in lemmas(word):
                     self.by_lemma.setdefault(lemma, set()).add(word)
+
+    def synonyms(self, alias, own):
+        """Блоки, куда ведёт действие через синонимию, кроме своих, и группа действия."""
+        words = tokens(alias)
+        group = self.group_of.get(words[0]) if len(words) == 1 else None
+        return self.group_blocks.get(group, set()) - own, group
+
+    def confusions(self, spans):
+        """Пары антонимов, между которыми колеблется хотя бы одно слово запроса."""
+        found = []
+        for span in spans:
+            groups = {}
+            for alt in span.alts:
+                groups.setdefault(self.group_of.get(alt.alias), alt.alias)
+            for left, right in OPPOSITE:
+                if left in groups and right in groups:
+                    found.append(f'опечатка между противоположными: «{groups[left]}» / «{groups[right]}»')
+        return found
 
     def add_phrase(self, kind, alias, index):
         phrase = tuple(tokens(alias))
@@ -262,7 +315,10 @@ class Lexicon:
                 if any(not variants[start + shift] for shift in range(length)):
                     continue
                 by_kind = {}
-                for combo in product(*[variants[start + shift][:3] for shift in range(length)]):
+                # Для одного слова смотрим все варианты: иначе ближайшие формы «выключ…» вытесняют
+                # антоним «включить» и опечатка между ними выглядит уверенной.
+                width = 6 if length == 1 else 3
+                for combo in product(*[variants[start + shift][:width] for shift in range(length)]):
                     for kind, alias, indexes in self.phrases.get(tuple(word for word, _, _ in combo), []):
                         distance = sum(distance for _, distance, _ in combo)
                         typos = [(words[start + shift], word, how) for shift, (word, _, how) in enumerate(combo) if how != 'exact']
@@ -391,19 +447,26 @@ class Parser:
         return readings
 
     def conflict(self, commands):
-        """Две уверенные команды над одним объектом с разными действиями: «открой и закрой шторы»."""
+        """Две уверенные команды над одним объектом с разными действиями: «открой и закрой шторы».
+
+        Синонимы («включи и зажги свет») противоречием не считаются.
+        """
         chosen = [command['candidates'][0] for command in commands if command['status'] == 'resolved' and command['candidates']]
         seen = {}
         for candidate in chosen:
-            if candidate['object'] in seen and seen[candidate['object']] != candidate['index']:
+            previous = seen.get(candidate['object'])
+            if previous and previous['index'] != candidate['index'] and not (previous['group'] and previous['group'] == candidate['group']):
                 return True
-            seen[candidate['object']] = candidate['index']
+            seen[candidate['object']] = candidate
         return False
 
     def commands(self, spans, inherited, spread):
         result = self.clause(spans, inherited, spread)
+        first = next((number for number, span in enumerate(spans) if span.kind in ('action', 'object', 'special')), len(spans))
+        source = ' '.join(span.text for number, span in enumerate(spans)
+                          if (span.kind != 'op' or span.op == 'prep') and not (span.kind == 'unknown' and number < first))
         for command in result:
-            command['source'] = ' '.join(span.text for span in spans if span.kind != 'op' or span.op in ('prep',))
+            command['source'] = source          # для подсказок TF-IDF: без обращений и служебных слов
         return result
 
     def clause(self, spans, inherited, spread):
@@ -430,12 +493,16 @@ class Parser:
                 issues.append('неизвестное место: ' + ', '.join(places))
             if extra:
                 issues.append('непонятные слова: ' + ', '.join(extra))
+        addresses = [span.text for span in spans if span.op == 'address']
+        if addresses:
+            issues.append('пропущено обращение: ' + ', '.join(addresses))
         if inherited.get('note'):
             issues.append(inherited['note'])
         if 'anaphora' in ops and not found:
             issues.append('ссылка на прошлую команду без контекста')
         if len({alt.alias for span in actions for alt in span.alts[:1]}) > 1:
             issues.append('несколько действий без союза')
+        issues.extend(index.confusions([span for span in spans if span.alts]))
 
         result = []
         for span in specials:
@@ -461,9 +528,10 @@ class Parser:
             candidates = []
             for span in actions[:1] if not unknown_object else []:      # для незнакомого объекта — подсказки TF-IDF
                 for alt in span.alts:
-                    for item in sorted(alt.indexes):
+                    synonyms, group = index.synonyms(alt.alias, alt.indexes)
+                    for item in sorted(alt.indexes | synonyms):
                         candidates.append(self.candidate(item, alt.alias, alt.quality * MISSING_ACTION, explain_typos(alt), '',
-                                                         alt.distance > 0))
+                                                         alt.distance > 0, group, item in synonyms))
             result.append(self.status(candidates, issues if unknown_object else issues + ['не указан объект']))
             return result
 
@@ -482,12 +550,14 @@ class Parser:
                 for span in actions:
                     for alt in span.alts:
                         typo = fuzzy or alt.distance > 0
-                        if item in alt.indexes:
+                        synonyms, group = index.synonyms(alt.alias, alt.indexes)
+                        if item in alt.indexes or item in synonyms:
+                            note = [] if item in alt.indexes else                                 [f'«{alt.alias}» — то же действие, что «{index.blocks[item]["text"].split()[0]}»']
                             candidates.append(self.candidate(item, alt.alias, alt.quality * quality,
-                                                             explain_typos(alt) + explain, alias, typo))
+                                                             explain_typos(alt) + explain + note, alias, typo, group, bool(note)))
                         else:
                             others.append(self.candidate(item, alt.alias, alt.quality * quality * MISSING_ACTION,
-                                                         explain_typos(alt) + explain, alias, typo))
+                                                         explain_typos(alt) + explain, alias, typo, group))
             if candidates:
                 result.append(self.status(candidates, issues + (['выбор через «или»: решает пользователь'] if choice else []),
                                           choice=choice))
@@ -541,18 +611,24 @@ class Parser:
                 return alias, [typo for hit in hits for typo in min(hit, key=lambda alt: alt.distance).typos]
         return None
 
-    def candidate(self, item, action, quality, explain, alias, fuzzy=False):
+    def candidate(self, item, action, quality, explain, alias, fuzzy=False, group=None, via_synonym=False):
         block = self.index.blocks[item]
         text = ' '.join(part for part in (action, alias) if part) or block['text']
         objects = block.get('objects') or [block['text']]
         careful = any(word in CAREFUL for name in objects for word in tokens(name))
         return {'index': item, 'text': text, 'score': quality, 'explain': list(dict.fromkeys(explain)),
-                'object': tuple(sorted(objects)),
+                'object': tuple(sorted(objects)), 'group': group, 'via_synonym': via_synonym,
                 'careful': careful and (fuzzy or any(line.startswith('неполное') for line in explain))}
 
     def status(self, candidates, issues, incomplete=False, incompatible=False, missing=None, choice=False):
+        # Блок со «своим» действием важнее блока-дубля, найденного через синоним («зажги свет на кухне»
+        # и «включи свет на кухне» с тем же объектом) — иначе синонимия создаёт ложную ничью.
+        direct = {(candidate['object'], candidate['group']) for candidate in candidates if not candidate['via_synonym']}
+        candidates = [candidate for candidate in candidates
+                      if not (candidate['via_synonym'] and (candidate['object'], candidate['group']) in direct)]
         unique = {}
-        for candidate in sorted(candidates, key=lambda candidate: -candidate['score']):
+        order = lambda candidate: (-candidate['score'], self.index.blocks[candidate['index']]['text'])   # ничья — по тексту, не по номеру
+        for candidate in sorted(candidates, key=order):
             unique.setdefault(candidate['index'], candidate)
         candidates = list(unique.values())[:LIMIT]
         issues = issues + ([missing] if missing else [])
@@ -568,7 +644,8 @@ class Parser:
             status = 'incompatible'
         elif not candidates:
             status = 'not_found'
-        elif choice or any(issue.startswith(('несколько действий', 'непонятные слова')) for issue in issues):
+        elif choice or any(issue.startswith(('несколько действий', 'непонятные слова', 'опечатка между противоположными'))
+                           for issue in issues):
             status = 'ambiguous'
         elif candidates[0]['careful']:
             status = 'ambiguous'
@@ -690,4 +767,5 @@ def explain_typos(alt):
 def describe(typed, word, how):
     if how == 'form':
         return f'«{typed}» → «{word}»: другая форма слова'
-    return f'«{typed}» → «{word}»: {edit_kind(typed, word)}'
+    edits = osa(typed, word)
+    return f'«{typed}» → «{word}»: {edit_kind(typed, word) if edits == 1 else f"{edits} правки"}'
