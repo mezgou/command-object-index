@@ -6,12 +6,16 @@
 инвертированный индекс — считаются только формы с общими триграммами.
 
 В отличие от Левенштейна, лишние слова в запросе не «съедают» расстояние:
-они лишь добавляют триграммы, которых нет у формы. Опечатка ломает 1–3
+их триграммы могут уменьшить косинус, если они встречаются в каталоге;
+совсем неизвестные триграммы при расчёте длины запроса игнорируются. Опечатка ломает 1–3
 триграммы из десятков, поэтому похожая форма остаётся наверху. Смысла
 («не включай», «через час», две команды) метод не понимает — это
 базовая линия для сравнения со структурным индексом.
+
+Возвращаются только десять лучших блоков с близостью не ниже 0.5.
 """
 
+import heapq
 import math
 from collections import Counter, defaultdict
 
@@ -32,11 +36,10 @@ def search(query, blocks):
         block, text = index['forms'][form]
         if score > best.get(block, (0, ''))[0]:
             best[block] = (min(score, 1.0), text)
-    results = [{'index': block, 'text': text, 'score': round(score, 4)} for block, (score, text) in best.items()]
-    for block in blocks:
-        if block['index'] not in best:
-            results.append({'index': block['index'], 'text': block['text'], 'score': 0.0})
-    return sorted(results, key=lambda result: (-result['score'], normalize(result['text']), result['index']))
+    results = ({'index': block, 'text': text, 'score': round(score, 4)}
+               for block, (score, text) in best.items() if score >= 0.5)
+    return heapq.nsmallest(10, results,
+                           key=lambda result: (-result['score'], normalize(result['text']), result['index']))
 
 
 def trigrams(text):

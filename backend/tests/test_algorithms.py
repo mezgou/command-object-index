@@ -297,11 +297,45 @@ class StructuredLemmatizationTests(unittest.TestCase):
 
 
 class TfidfAlgorithmTests(unittest.TestCase):
+    def test_limit_and_threshold_use_unrounded_score(self):
+        index = {
+            'idf': {'abc': 1},
+            'forms': [(i, f'команда {i}') for i in range(1, 14)],
+            'postings': {'abc': [(i, score) for i, score in enumerate(
+                [0.5, 0.49996] + [0.51 + n * 0.01 for n in range(11)])]},
+        }
+        with patch.object(tfidf_char, 'index_for', return_value=index), \
+             patch.object(tfidf_char, 'trigrams', return_value={'abc': 1}):
+            results = tfidf_char.search('запрос', [])
+        self.assertEqual(len(results), 10)
+        self.assertEqual([item['score'] for item in results], sorted((item['score'] for item in results), reverse=True))
+        self.assertTrue(all(item['score'] >= 0.5 for item in results))
+        self.assertNotIn(2, [item['index'] for item in results])
+
+    def test_threshold_is_inclusive_and_unrelated_query_is_empty(self):
+        index = {'idf': {'abc': 1}, 'forms': [(1, 'команда'), (2, 'другая')],
+                 'postings': {'abc': [(0, 0.5), (1, 0.49996)]}}
+        with patch.object(tfidf_char, 'index_for', return_value=index), \
+             patch.object(tfidf_char, 'trigrams', return_value={'abc': 1}):
+            self.assertEqual(tfidf_char.search('запрос', []), [{'index': 1, 'text': 'команда', 'score': 0.5}])
+        self.assertEqual(tfidf_char.search('жжжжжжжжжж', BLOCKS), [])
+
+    def test_top_ten_ties_keep_text_and_index_order(self):
+        forms = [(i, 'абсолютно одинаковая' if i in (1, 2) else f'команда {i:02}') for i in range(15, 0, -1)]
+        index = {'idf': {'abc': 1}, 'forms': forms,
+                 'postings': {'abc': [(i, 0.8) for i in range(len(forms))]}}
+        with patch.object(tfidf_char, 'index_for', return_value=index), \
+             patch.object(tfidf_char, 'trigrams', return_value={'abc': 1}):
+            results = tfidf_char.search('запрос', [])
+        expected = sorted(({'index': block, 'text': text, 'score': 0.8} for block, text in forms),
+                          key=lambda result: (normalize(result['text']), result['index']))[:10]
+        self.assertEqual(results, expected)
+
     def test_contract_and_typo_tolerance(self):
         results = tfidf_char.search('вклюич свет на кухне', BLOCKS)
-        self.assertEqual(len(results), len(BLOCKS))
+        self.assertLessEqual(len(results), 10)
         self.assertEqual(TEXT[results[0]['index']], 'включи свет на кухне')
-        self.assertTrue(all(0 <= result['score'] <= 1 for result in results))
+        self.assertTrue(all(0.5 <= result['score'] <= 1 for result in results))
         self.assertEqual(validate_results(results, set(TEXT)), results)
 
 

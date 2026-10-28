@@ -45,7 +45,7 @@ def search(query: str, blocks: list[dict]) -> list[dict]:
 | id | модуль | идея |
 |---|---|---|
 | `levenshtein-combinations` | [levenshtein_combinations.py](levenshtein_combinations.py) | Левенштейн по всем формам «действие + объект» и «объект + действие» |
-| `tfidf-char` | [tfidf_char.py](tfidf_char.py) | косинус по символьным 3-граммам с весами IDF через инвертированный индекс |
+| `tfidf-char` | [tfidf_char.py](tfidf_char.py) | косинус по символьным 3-граммам с весами IDF через инвертированный индекс; до 10 блоков с оценкой ≥ 0.5 |
 | `structured` | [structured.py](structured.py) | действия, объекты и служебные слова по отдельности; несколько команд, отрицание, безопасный отказ |
 
 В [shared.py](shared.py), кроме нормализации и Левенштейна, лежат `tokens` (слова запроса с запятыми), `osa` (Левенштейн с перестановкой соседних букв) и `DeletionIndex` — нечёткий поиск слова через индекс удалений. Их можно использовать в любом алгоритме.
