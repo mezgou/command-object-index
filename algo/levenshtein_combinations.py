@@ -1,20 +1,16 @@
 """Текущий алгоритм: Левенштейн по формам смыслового блока."""
 
-import json
-
-from algo.shared import levenshtein_normalized, normalize, normalized_candidate_forms
-
-_CACHE = {}
+from algo.shared import levenshtein_normalized, normalize, normalized_candidate_forms, prepared_index
 
 
 def index_for(blocks):
-    """Готовит формы каталога один раз и пересобирает индекс при его изменении."""
-    key = json.dumps(blocks, ensure_ascii=False, sort_keys=True)
-    if key not in _CACHE:
-        if len(_CACHE) >= 4:
-            _CACHE.pop(next(iter(_CACHE)))
-        _CACHE[key] = [(block['index'], normalized_candidate_forms(block)) for block in blocks]
-    return _CACHE[key]
+    """Готовит формы для снимка каталога или произвольного списка блоков."""
+    return prepared_index(blocks, 'levenshtein', lambda items: [
+        (block['index'], normalized_candidate_forms(block)) for block in items
+    ])
+
+
+prepare_index = index_for
 
 
 def search(query, blocks):

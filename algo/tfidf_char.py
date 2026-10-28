@@ -12,13 +12,10 @@
 базовая линия для сравнения со структурным индексом.
 """
 
-import json
 import math
 from collections import Counter, defaultdict
 
-from algo.shared import candidate_forms, normalize
-
-_CACHE = {}
+from algo.shared import candidate_forms, normalize, prepared_index
 
 
 def search(query, blocks):
@@ -48,23 +45,25 @@ def trigrams(text):
 
 
 def index_for(blocks):
-    """Индекс строится один раз на содержимое каталога: правка блока меняет ключ."""
-    key = json.dumps(blocks, ensure_ascii=False, sort_keys=True)
-    if key not in _CACHE:
-        if len(_CACHE) >= 4:
-            _CACHE.pop(next(iter(_CACHE)))
-        forms, vectors = [], []
-        for block in blocks:
-            for form in candidate_forms(block):
-                forms.append((block['index'], form))
-                vectors.append(trigrams(form))
-        frequency = Counter(gram for vector in vectors for gram in vector)
-        idf = {gram: math.log((1 + len(vectors)) / (1 + count)) + 1 for gram, count in frequency.items()}
-        postings = defaultdict(list)
-        for number, vector in enumerate(vectors):
-            weights = {gram: count * idf[gram] for gram, count in vector.items()}
-            norm = math.sqrt(sum(value * value for value in weights.values()))
-            for gram, value in weights.items():
-                postings[gram].append((number, value / norm))
-        _CACHE[key] = {'forms': forms, 'idf': idf, 'postings': postings}
-    return _CACHE[key]
+    """Использует индекс снимка; обычный список индексируется заново."""
+    return prepared_index(blocks, 'tfidf-char', build_index)
+
+
+def build_index(blocks):
+    forms, vectors = [], []
+    for block in blocks:
+        for form in candidate_forms(block):
+            forms.append((block['index'], form))
+            vectors.append(trigrams(form))
+    frequency = Counter(gram for vector in vectors for gram in vector)
+    idf = {gram: math.log((1 + len(vectors)) / (1 + count)) + 1 for gram, count in frequency.items()}
+    postings = defaultdict(list)
+    for number, vector in enumerate(vectors):
+        weights = {gram: count * idf[gram] for gram, count in vector.items()}
+        norm = math.sqrt(sum(value * value for value in weights.values()))
+        for gram, value in weights.items():
+            postings[gram].append((number, value / norm))
+    return {'forms': forms, 'idf': idf, 'postings': postings}
+
+
+prepare_index = index_for

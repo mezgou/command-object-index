@@ -5,7 +5,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
-from algo.registry import public_algorithms, run_algorithms
+from algo.registry import prepare_catalog, public_algorithms, run_algorithms
 from catalog import DEFAULT_COMMANDS
 
 
@@ -14,7 +14,8 @@ def normalize(text):
     return ' '.join(text.lower().split())
 
 DATA_PATH = os.environ.get('DATA_PATH', '/data/commands.json')
-LOCK = threading.Lock()
+LOCK = threading.RLock()
+_SNAPSHOT = None
 
 
 def clean_words(value, allow_empty=False):
@@ -73,6 +74,29 @@ def with_ids(commands):
     return [{**command, 'id': index + 1, 'index': index + 1} for index, command in enumerate(commands)]
 
 
+def catalog_snapshot():
+    """Загрузить каталог при первом использовании и вернуть текущий снимок."""
+    global _SNAPSHOT
+    with LOCK:
+        if _SNAPSHOT is None:
+            _SNAPSHOT = prepare_catalog(with_ids(load_commands()))
+        return _SNAPSHOT
+
+
+def update_catalog(commands):
+    """Подготовить новую версию до записи и атомарно опубликовать её после записи."""
+    global _SNAPSHOT
+    snapshot = prepare_catalog(with_ids(commands))
+    save_commands(commands)
+    _SNAPSHOT = snapshot
+
+
+def editable_commands():
+    """Копия без служебных полей для изменения каталога под блокировкой."""
+    return [{key: value for key, value in block.items() if key not in ('id', 'index')}
+            for block in catalog_snapshot()]
+
+
 class Handler(BaseHTTPRequestHandler):
     def respond(self, status, data):
         body = json.dumps(data, ensure_ascii=False).encode('utf-8')
@@ -89,8 +113,7 @@ class Handler(BaseHTTPRequestHandler):
         return json.loads(self.rfile.read(size))
 
     def commands(self):
-        with LOCK:
-            return load_commands()
+        return catalog_snapshot()
 
     def do_GET(self):
         url = urlparse(self.path)
@@ -98,7 +121,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.respond(200, {'algorithms': public_algorithms()})
         if url.path != '/api/commands':
             return self.respond(404, {'error': 'Не найдено'})
-        self.respond(200, {'commands': with_ids(self.commands())})
+        self.respond(200, {'commands': self.commands()})
 
     def do_POST(self):
         path = urlparse(self.path).path
@@ -111,13 +134,13 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError('Введите запрос длиной до 200 символов')
                 if not isinstance(algorithm_ids, list) or not 1 <= len(algorithm_ids) <= 3 or any(not isinstance(item, str) for item in algorithm_ids):
                     raise ValueError('Выберите от одного до трёх алгоритмов')
-                algorithms = run_algorithms(algorithm_ids, query, with_ids(self.commands()))
+                algorithms = run_algorithms(algorithm_ids, query, self.commands())
             except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError, AttributeError) as error:
                 return self.respond(400, {'error': str(error) or 'Некорректный запрос'})
             return self.respond(200, {'algorithms': algorithms})
         if path == '/api/commands/examples':
             with LOCK:
-                save_commands(copy.deepcopy(DEFAULT_COMMANDS))
+                update_catalog(copy.deepcopy(DEFAULT_COMMANDS))
             return self.respond(200, {'ok': True})
         if path != '/api/commands':
             return self.respond(404, {'error': 'Не найдено'})
@@ -126,11 +149,11 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError, AttributeError):
             return self.respond(400, {'error': 'Заполните текст команды и корректные варианты длиной до 200 символов'})
         with LOCK:
-            commands = load_commands()
+            commands = editable_commands()
             if any(normalize(item['text']) == normalize(command['text']) for item in commands):
                 return self.respond(409, {'error': 'Такая команда уже есть в списке'})
             commands.append(command)
-            save_commands(commands)
+            update_catalog(commands)
         self.respond(201, {**command, 'id': len(commands)})
 
     def do_PUT(self):
@@ -144,33 +167,34 @@ class Handler(BaseHTTPRequestHandler):
             return self.respond(400, {'error': 'Заполните текст команды и корректные варианты длиной до 200 символов'})
         index = int(path[len(prefix):]) - 1
         with LOCK:
-            commands = load_commands()
+            commands = editable_commands()
             if not 0 <= index < len(commands):
                 return self.respond(404, {'error': 'Команда не найдена'})
             if any(i != index and normalize(item['text']) == normalize(command['text']) for i, item in enumerate(commands)):
                 return self.respond(409, {'error': 'Такая команда уже есть в списке'})
             commands[index] = command
-            save_commands(commands)
+            update_catalog(commands)
         self.respond(200, {**command, 'id': index + 1})
 
     def do_DELETE(self):
         path = urlparse(self.path).path
         if path == '/api/commands':
             with LOCK:
-                save_commands([])
+                update_catalog([])
             return self.respond(200, {'ok': True})
         prefix = '/api/commands/'
         if not path.startswith(prefix) or not path[len(prefix):].isdigit():
             return self.respond(404, {'error': 'Не найдено'})
         index = int(path[len(prefix):]) - 1
         with LOCK:
-            commands = load_commands()
+            commands = editable_commands()
             if not 0 <= index < len(commands):
                 return self.respond(404, {'error': 'Команда не найдена'})
             commands.pop(index)
-            save_commands(commands)
+            update_catalog(commands)
         self.respond(200, {'ok': True})
 
 
 if __name__ == '__main__':
+    catalog_snapshot()
     ThreadingHTTPServer(('0.0.0.0', int(os.environ.get('PORT', '8000'))), Handler).serve_forever()

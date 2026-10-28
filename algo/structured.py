@@ -23,11 +23,10 @@
 необязательные поля контракта: `decision`, `status`, `command`, `explain`.
 """
 
-import json
 from itertools import product
 
 from algo import tfidf_char
-from algo.shared import DeletionIndex, action_forms, edit_kind, lemmas, osa, tokens
+from algo.shared import DeletionIndex, action_forms, edit_kind, lemmas, osa, prepared_index, tokens
 
 OPERATORS = {
     'and': ['и', 'а также', ','],
@@ -75,7 +74,6 @@ MISSING_ACTION = 0.5      # множитель кандидатов, если д
 HINTS = 3                 # подсказок TF-IDF, если структурный разбор ничего не нашёл
 HINT_MIN = 0.5            # ниже этой близости TF-IDF подсказка — шум («свари кофе» → 0.36)
 STATUS_ORDER = ['negated', 'unsupported', 'not_found', 'incompatible', 'incomplete', 'ambiguous', 'resolved']
-_CACHE = {}
 
 
 def search(query, blocks):
@@ -141,13 +139,11 @@ def decide(commands, close_readings, conflict):
 
 
 def lexicon_for(blocks):
-    """Индекс строится один раз на содержимое каталога: правка блока меняет ключ."""
-    key = json.dumps(blocks, ensure_ascii=False, sort_keys=True)
-    if key not in _CACHE:
-        if len(_CACHE) >= 4:
-            _CACHE.pop(next(iter(_CACHE)))
-        _CACHE[key] = Lexicon(blocks)
-    return _CACHE[key]
+    """Использует индекс снимка; обычный список индексируется заново."""
+    return prepared_index(blocks, 'structured', Lexicon)
+
+
+prepare_index = lexicon_for
 
 
 class Lexicon:

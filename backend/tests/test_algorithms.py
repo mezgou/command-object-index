@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(ROOT, 'backend', 'app'))
 from algo import levenshtein_combinations, structured, tfidf_char
 from algo.levenshtein_combinations import search
 from algo.registry import public_algorithms, run_algorithms, validate_results
-from algo.shared import DeletionIndex, candidate_forms, levenshtein, max_edits, normalize, osa, tokens
+from algo.shared import CatalogSnapshot, DeletionIndex, candidate_forms, levenshtein, max_edits, normalize, osa, tokens
 from catalog import DEFAULT_COMMANDS
 from main import clean_command
 
@@ -90,10 +90,10 @@ class LevenshteinAlgorithmTests(unittest.TestCase):
         self.assertEqual([item['index'] for item in search('включи свет', blocks)], [1, 2])
 
     def test_query_is_normalized_once_with_prepared_catalog(self):
-        levenshtein_combinations._CACHE.clear()
-        search('зажги свет', [self.block])
+        blocks = CatalogSnapshot([self.block])
+        search('зажги свет', blocks)
         with patch.object(levenshtein_combinations, 'normalize', wraps=normalize) as normalize_call:
-            search('включите кухонный свет', [self.block])
+            search('включите кухонный свет', blocks)
         normalize_call.assert_called_once_with('включите кухонный свет')
 
     def test_catalog_edit_rebuilds_prepared_forms(self):

@@ -4,6 +4,7 @@ from importlib import import_module
 from numbers import Real
 
 from algo.config import ALGORITHMS
+from algo.shared import CatalogSnapshot
 
 DECISIONS = {'accept', 'clarify', 'reject'}
 STATUSES = {'resolved', 'ambiguous', 'incomplete', 'incompatible', 'not_found', 'negated', 'unsupported'}
@@ -26,6 +27,17 @@ def load_search_function(algorithm):
     if not callable(function):
         raise ValueError(f"Алгоритм «{algorithm['id']}» не содержит вызываемую функцию поиска")
     return function
+
+
+def prepare_catalog(blocks):
+    """Создать снимок и подготовить индексы алгоритмов, которым они нужны."""
+    snapshot = CatalogSnapshot(blocks)
+    for algorithm in ALGORITHMS:
+        module = import_module(algorithm['module'])
+        prepare = getattr(module, 'prepare_index', None)
+        if callable(prepare):
+            prepare(snapshot)
+    return snapshot
 
 
 def validate_results(results, valid_indexes):
@@ -72,7 +84,7 @@ def run_algorithms(algorithm_ids, query, blocks):
     configured = configured_algorithms()
     if len(set(algorithm_ids)) != len(algorithm_ids) or any(identifier not in configured for identifier in algorithm_ids):
         raise ValueError('Выбран неизвестный алгоритм')
-    valid_indexes = {block['index'] for block in blocks}
+    valid_indexes = blocks.valid_indexes if isinstance(blocks, CatalogSnapshot) else {block['index'] for block in blocks}
     response = []
     for identifier in algorithm_ids:
         algorithm = configured[identifier]

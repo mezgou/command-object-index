@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from algo.config import ALGORITHMS  # noqa: E402
 from algo.registry import configured_algorithms, load_search_function, validate_results  # noqa: E402
-from algo.shared import max_edits, osa, tokens  # noqa: E402
+from algo.shared import CatalogSnapshot, max_edits, osa, tokens  # noqa: E402
 from algo.structured import GROUPS, OPERATORS, OPPOSITE  # noqa: E402
 from evaluate import DATASET, is_confident, load_blocks, load_dataset  # noqa: E402
 
@@ -63,7 +63,7 @@ def outcome(search, query, blocks, threshold):
 
 
 def reindex(commands):
-    return [{**command, 'id': number + 1, 'index': number + 1} for number, command in enumerate(commands)]
+    return CatalogSnapshot([{**command, 'id': number + 1, 'index': number + 1} for number, command in enumerate(commands)])
 
 
 def permutations(blocks, count=3):
@@ -110,10 +110,11 @@ def antonym_typos(word, known):
 def cases(dataset, blocks):
     """Все проверки в виде (отношение, исходный запрос, изменённый запрос или каталог, ожидание)."""
     known = known_words(blocks)
+    shuffled_catalogs = permutations(blocks)
     result = []
     for item in dataset:
         query = item['query']
-        for shuffled in permutations(blocks):
+        for shuffled in shuffled_catalogs:
             result.append(('перестановка каталога', query, (query, shuffled), 'same'))
         for changed in (f'пожалуйста {query}', f'{query} пожалуйста', f'привет {query}'):
             result.append(('вежливость и обращение', query, (changed, blocks), 'same'))

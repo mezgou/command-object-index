@@ -10,6 +10,29 @@ TOKEN = re.compile(r'\w+|,')
 WORD = re.compile(r'\w+', re.UNICODE)
 _MORPH = None
 
+
+class CatalogSnapshot(list):
+    """Неизменяемая по соглашению версия каталога и её подготовленные индексы.
+
+    При изменении каталога создаётся новый снимок; существующие поисковые запросы
+    продолжают использовать старый. Обычный list тоже принимается алгоритмами,
+    но для него индексы не кэшируются, поскольку его можно изменить в любой момент.
+    """
+
+    def __init__(self, blocks):
+        super().__init__(blocks)
+        self.valid_indexes = frozenset(block['index'] for block in self)
+        self.indexes = {}
+
+
+def prepared_index(blocks, name, build):
+    """Подготовить индекс один раз для снимка, для обычного списка — каждый вызов."""
+    if not isinstance(blocks, CatalogSnapshot):
+        return build(blocks)
+    if name not in blocks.indexes:
+        blocks.indexes[name] = build(blocks)
+    return blocks.indexes[name]
+
 # Видовые пары — отдельные леммы, а не словоформы одного глагола. В контексте
 # команды обе формы обозначают одно действие; перечень намеренно явный.
 ASPECT_PAIRS = {

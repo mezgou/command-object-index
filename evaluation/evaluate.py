@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.join(ROOT, 'backend', 'app'))
 
 from algo.config import ALGORITHMS  # noqa: E402
 from algo.registry import configured_algorithms, load_search_function, validate_results  # noqa: E402
+from algo.shared import CatalogSnapshot  # noqa: E402
 from catalog import DEFAULT_COMMANDS  # noqa: E402
 
 DATASET = os.path.join(os.path.dirname(__file__), 'dataset.json')
@@ -35,7 +36,7 @@ def load_blocks(path=None):
     if path:
         with open(path, encoding='utf-8') as file:
             commands = json.load(file)
-    return [{**command, 'id': index + 1, 'index': index + 1} for index, command in enumerate(commands)]
+    return CatalogSnapshot([{**command, 'id': index + 1, 'index': index + 1} for index, command in enumerate(commands)])
 
 
 def load_dataset(path, blocks):
